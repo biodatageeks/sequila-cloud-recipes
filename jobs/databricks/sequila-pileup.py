@@ -1,8 +1,9 @@
 from pysequila import SequilaSession
+import subprocess
 
 sequila = SequilaSession.builder \
     .appName("SeQuiLa") \
     .config("spark.driver.memory", "4g") \
     .getOrCreate()
 
-display(sequila.version)
+print(sequila.version)

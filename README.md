@@ -1,6 +1,16 @@
 # sequila-recipes
 SeQuiLa recipes, examples and other cloud-related content
 
+# Status
+## GCP
+
+Dataproc :white_check_mark: 
+
+## Azure
+Databricks :x: 
+
+## AWS
+
 # Setup pre-commit checks
 1. Activate pre-commit integration
 ```bash
@@ -25,4 +35,15 @@ az login
 databricks configure --token
 ```
 4. Check if `~/.databrickscfg` file has been generated
+
 # GCP
+
+## Login
+```bash
+gcloud auth application-default login
+# set default project
+gcloud config set project tbd-tbd-devel
+```
+
+## Deploy
+

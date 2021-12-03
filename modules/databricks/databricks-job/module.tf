@@ -24,9 +24,9 @@ resource "databricks_dbfs_file" "this" {
 }
 
 resource "databricks_notebook" "this" {
-  path     = "${data.databricks_current_user.me.home}/sequila-notebook"
+  path     = "jobs/sequila-notebook"
   language = "PYTHON"
-  source   = "${path.module}/sequila-pileup.py"
+  source   = "jobs/databricks/sequila-pileup.py"
 }
 
 resource "databricks_job" "this" {

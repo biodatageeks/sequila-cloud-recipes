@@ -6,9 +6,16 @@ terraform {
       source  = "databrickslabs/databricks"
       version = "0.3.11"
     }
+    google = {
+      source  = "hashicorp/google"
+      version = "4.2.0"
+    }
   }
 }
 provider "azurerm" {
   features {}
 }
 
+provider "google" {
+  # Configuration options
+}
