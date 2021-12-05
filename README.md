@@ -1,4 +1,6 @@
 # sequila-recipes
+![example workflow](https://github.com/biodatageeks/sequila-cloud-recipes/actions/workflows/default.yml/badge.svg?branch=master)
+
 SeQuiLa recipes, examples and other cloud-related content demonstrating
 how to run SeQuila jobs in the cloud.
 For most tasks we use [Terraform](https://www.terraform.io/downloads.html) as a main IaC (Infrastrucrure as Code) tool.
@@ -7,7 +9,7 @@ For most tasks we use [Terraform](https://www.terraform.io/downloads.html) as a 
 ## GCP
 
 * [Dataproc](#Dataproc) :white_check_mark: 
-* GKE (Google Kubernetes Enging) :white_check_mark:
+* GKE (Google Kubernetes Engine) :white_check_mark:
 
 ## Azure
 * Databricks: :interrobang:
