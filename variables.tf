@@ -47,3 +47,20 @@ variable "data_files" {
   type        = list(string)
   description = "Data files to copy to staging bucket"
 }
+
+variable "gcp-gke-deploy" {
+  type    = bool
+  default = false
+}
+
+variable "gke_max_node_count" {
+  type = number
+}
+
+variable "gke_machine_type" {
+  type = string
+}
+
+variable "gke_preemptible" {
+  type = bool
+}
