@@ -1,7 +1,11 @@
 name: Technical tests
 
 # Controls when the workflow will run
-on: [pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 jobs:
   default-checks:
     runs-on: ubuntu-latest
