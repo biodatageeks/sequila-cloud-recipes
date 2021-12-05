@@ -56,7 +56,7 @@ gcloud config set project tbd-tbd-devel
 ## Dataproc
 ### Deploy
 ```bash
-terraform apply -var-file=env/gcp-dataproc.tfvars
+terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-dataproc.tfvars
 ```
 ### Run
 ```bash
@@ -65,3 +65,23 @@ gcloud workflows execute pysequila-workflow --location europe-west2
 or from GCP UI Console:
 ![img.png](doc/images/dataproc-workflow.png)
 
+
+## GKE
+### Deploy
+```bash
+terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars
+```
+
+### Run
+1. Connect to the K8S cluster, e.g.:
+```bash
+gcloud container clusters get-credentials tbd-tbd-devel-cluster --zone europe-west2-b --project tbd-tbd-devel
+# check connectivity
+ kubectl get nodes
+NAME                                                  STATUS   ROLES    AGE   VERSION
+gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-8wqh   Ready    <none>   25m   v1.21.5-gke.1302
+gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-dlr1   Ready    <none>   25m   v1.21.5-gke.1302
+gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-r5l3   Ready    <none>   25m   v1.21.5-gke.1302
+
+```
+2. 

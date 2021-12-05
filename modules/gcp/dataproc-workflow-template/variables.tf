@@ -1,6 +1,6 @@
 variable "project_name" {
   type        = string
-  description = "Prefix to use for naming resource group and workspace"
+  description = "Name of the GCP project"
 }
 
 variable "location" {
