@@ -1,15 +1,22 @@
 # sequila-recipes
-SeQuiLa recipes, examples and other cloud-related content
+SeQuiLa recipes, examples and other cloud-related content demonstrating
+how to run SeQuila jobs in the cloud.
+For most tasks we use [Terraform](https://www.terraform.io/downloads.html) as a main IaC (Infrastrucrure as Code) tool.
 
 # Status
 ## GCP
 
-Dataproc :white_check_mark: 
+* [Dataproc](#Dataproc) :white_check_mark: 
+* GKE (Google Kubernetes Enging) :white_check_mark:
 
 ## Azure
-Databricks :x: 
+* Databricks: :interrobang:
+* HDInsight: :soon:
+* AKS (Azure Kubernetes Service): :soon: 
 
 ## AWS
+* EMR: :soon:
+* EKS(Elastic Kubernetes Service): :soon:
 
 # Setup pre-commit checks
 1. Activate pre-commit integration
@@ -45,5 +52,16 @@ gcloud auth application-default login
 gcloud config set project tbd-tbd-devel
 ```
 
-## Deploy
+
+## Dataproc
+### Deploy
+```bash
+terraform apply -var-file=env/gcp-dataproc.tfvars
+```
+### Run
+```bash
+gcloud workflows execute pysequila-workflow --location europe-west2
+```
+or from GCP UI Console:
+![img.png](doc/images/dataproc-workflow.png)
 
