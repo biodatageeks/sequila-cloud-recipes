@@ -5,7 +5,38 @@ SeQuiLa recipes, examples and other cloud-related content demonstrating
 how to run SeQuila jobs in the cloud.
 For most tasks we use [Terraform](https://www.terraform.io/downloads.html) as a main IaC (Infrastructure as Code) tool.
 
-# Status
+Table of Contents
+=================
+
+* [Disclaimer](#disclaimer)
+* [Modules statuses](#modules-statuses)
+    * [GCP](#gcp)
+    * [Azure](#azure)
+    * [AWS](#aws)
+* [Azure](#azure-1)
+    * [Login](#login)
+* [Databricks](#databricks)
+    * [Login](#login-1)
+* [GCP](#gcp-1)
+    * [Login](#login-2)
+    * [General GCP setup](#general-gcp-setup)
+    * [Dataproc](#dataproc)
+        * [Deploy](#deploy)
+        * [Run](#run)
+    * [GKE](#gke)
+        * [Deploy](#deploy-1)
+        * [Run](#run-1)
+* [Development and contribution](#development-and-contribution)
+    * [Setup pre-commit checks](#setup-pre-commit-checks)
+
+    
+# Disclaimer
+These are NOT production-ready examples. Terraform modules and Docker images are scanned/linted with tools such
+as [checkov](https://www.checkov.io/), [tflint](https://github.com/terraform-linters/tflint) and [tfsec](https://github.com/aquasecurity/tfsec)
+but some security tweaks have been disabled for the sake of simplicity. Some cloud deployments best practices has been intentionally skipped
+as well. Check code comments for details.
+
+# Modules statuses
 ## GCP
 
 * [Dataproc](#Dataproc) :white_check_mark: 
@@ -19,15 +50,6 @@ For most tasks we use [Terraform](https://www.terraform.io/downloads.html) as a 
 ## AWS
 * EMR: :soon:
 * EKS(Elastic Kubernetes Service): :soon:
-
-# Setup pre-commit checks
-1. Activate pre-commit integration
-```bash
-pre-commit install
-```
-2. Install pre-commit hooks  [deps](https://github.com/antonbabenko/pre-commit-terraform#1-install-dependencies)
-
-
 
 # Azure
 ## Login
@@ -46,7 +68,6 @@ databricks configure --token
 4. Check if `~/.databrickscfg` file has been generated
 
 # GCP
-
 ## Login
 ```bash
 gcloud auth application-default login
@@ -54,6 +75,14 @@ gcloud auth application-default login
 gcloud config set project tbd-tbd-devel
 ```
 
+## General GCP setup
+1. Set GCP project-related env variables, e.g.:
+```bash
+export TF_VAR_project_name=tbd-tbd-devel
+export TF_VAR_region=europe-west2
+export TF_VAR_zone=europe-west2-b
+```
+Above variables are necessary for both `Dataproc` and `GKE` setups.
 
 ## Dataproc
 ### Deploy
@@ -86,4 +115,14 @@ gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-dlr1   Ready    <none>   25m   v1
 gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-r5l3   Ready    <none>   25m   v1.21.5-gke.1302
 
 ```
-2. 
+
+
+# Development and contribution
+## Setup pre-commit checks
+1. Activate pre-commit integration
+```bash
+pre-commit install
+```
+2. Install pre-commit hooks  [deps](https://github.com/antonbabenko/pre-commit-terraform#1-install-dependencies)
+
+

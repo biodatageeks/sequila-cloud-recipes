@@ -6,6 +6,7 @@ module "gcp-staging-bucket" {
   count        = var.gcp-dataproc-deploy || var.gcp-gke-deploy ? 1 : 0
 }
 
+#### GCP: DATAPROC
 module "gcp-dataproc-sequila-job" {
   depends_on           = [module.gcp-staging-bucket]
   source               = "./modules/gcp/dataproc-workflow-template"
@@ -19,6 +20,9 @@ module "gcp-dataproc-sequila-job" {
   count                = var.gcp-dataproc-deploy ? 1 : 0
 }
 
+#### END GCP: DATAPROC
+
+#### GCP: GKE
 module "gke" {
   depends_on     = [module.gcp-staging-bucket]
   source         = "./modules/gcp/gke"
@@ -31,20 +35,24 @@ module "gke" {
   count          = var.gcp-gke-deploy ? 1 : 0
 }
 
+#### END GCP: GKE
+
+
+### KUBERNETES: SPARK
 data "google_client_config" "default" {}
 
 provider "helm" {
   kubernetes {
-    host                   = module.gke[0].endpoint
+    host                   = try(module.gke[0].endpoint, "")
     token                  = data.google_client_config.default.access_token
-    cluster_ca_certificate = module.gke[0].cluster_ca_certificate
+    cluster_ca_certificate = try(module.gke[0].cluster_ca_certificate, "")
   }
 }
 
 provider "kubernetes" {
-  host                   = "https://${module.gke[0].endpoint}"
+  host                   = try("https://${module.gke[0].endpoint}", "")
   token                  = data.google_client_config.default.access_token
-  cluster_ca_certificate = module.gke[0].cluster_ca_certificate
+  cluster_ca_certificate = try(module.gke[0].cluster_ca_certificate, "")
 }
 
 module "spark-on-k8s-operator" {
@@ -64,4 +72,7 @@ module "data" {
   depends_on = [module.persistent_volume]
   source     = "./modules/kubernetes/shared-storage"
   pvc-name   = module.persistent_volume[0].pvc-name
+  count      = var.gcp-gke-deploy ? 1 : 0
 }
+
+### END KUBERNETES: SPARK
