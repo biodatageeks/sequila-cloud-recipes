@@ -1,0 +1,2 @@
+variable "volume_size" {
+}

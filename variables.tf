@@ -33,7 +33,7 @@ variable "project_name" {
   type        = string
   description = "Prefix to use for naming resource group and workspace"
 }
-variable "location" {
+variable "region" {
   type        = string
   description = "Location of the cluster"
 }
@@ -58,9 +58,16 @@ variable "gke_max_node_count" {
 }
 
 variable "gke_machine_type" {
-  type = string
+  type    = string
+  default = "e2-standard-2"
 }
 
 variable "gke_preemptible" {
-  type = bool
+  type    = bool
+  default = true
+}
+
+variable "gke_volume_size" {
+  type    = string
+  default = "1Gi"
 }
