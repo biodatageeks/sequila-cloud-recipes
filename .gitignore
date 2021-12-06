@@ -31,4 +31,5 @@ override.tf.json
 
 .idea
 venv
+docker/spark-py/*.jar
 

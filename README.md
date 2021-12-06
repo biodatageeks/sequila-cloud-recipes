@@ -3,7 +3,7 @@
 
 SeQuiLa recipes, examples and other cloud-related content demonstrating
 how to run SeQuila jobs in the cloud.
-For most tasks we use [Terraform](https://www.terraform.io/downloads.html) as a main IaC (Infrastrucrure as Code) tool.
+For most tasks we use [Terraform](https://www.terraform.io/downloads.html) as a main IaC (Infrastructure as Code) tool.
 
 # Status
 ## GCP

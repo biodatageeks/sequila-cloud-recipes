@@ -15,8 +15,16 @@ resource "google_storage_bucket" "bucket" {
 }
 
 resource "google_storage_bucket_object" "sequila-pileup" {
+
   name   = "jobs/pysequila/sequila-pileup.py"
   source = "jobs/gcp/dataproc/sequila-pileup.py"
+  bucket = google_storage_bucket.bucket.name
+}
+
+resource "google_storage_bucket_object" "sequila-pileup-gke" {
+
+  name   = "jobs/pysequila/sequila-pileup-gke.py"
+  source = "jobs/gcp/gke/sequila-pileup.py"
   bucket = google_storage_bucket.bucket.name
 }
 

@@ -12,8 +12,8 @@ module "gcp-dataproc-sequila-job" {
   project_name         = var.project_name
   location             = var.location
   zone                 = var.zone
-  main_python_file_uri = module.gcp-staging-bucket.0.output_name
-  bucket_name          = module.gcp-staging-bucket.0.bucket_name.id
+  main_python_file_uri = module.gcp-staging-bucket[0].output_name
+  bucket_name          = module.gcp-staging-bucket[0].bucket_name.id
   sequila_version      = var.sequila_version
   pysequila_version    = var.pysequila_version
   count                = var.gcp-dataproc-deploy ? 1 : 0
@@ -27,6 +27,7 @@ module "gke" {
   machine_type   = var.gke_machine_type
   max_node_count = var.gke_max_node_count
   preemptible    = var.gke_preemptible
+  bucket_name    = module.gcp-staging-bucket[0].bucket_name.id
   count          = var.gcp-gke-deploy ? 1 : 0
 }
 
@@ -41,13 +42,26 @@ provider "helm" {
 }
 
 provider "kubernetes" {
-  host                   = "https://${module.gke.endpoint}"
+  host                   = "https://${module.gke[0].endpoint}"
   token                  = data.google_client_config.default.access_token
-  cluster_ca_certificate = module.gke.cluster_ca_certificate
+  cluster_ca_certificate = module.gke[0].cluster_ca_certificate
 }
 
 module "spark-on-k8s-operator" {
   depends_on = [module.gke]
-  source     = "./modules/spark-on-k8s-operator"
+  source     = "./modules/kubernetes/spark-on-k8s-operator"
   count      = var.gcp-gke-deploy ? 1 : 0
+}
+
+module "persistent_volume" {
+  depends_on  = [module.gke]
+  source      = "./modules/kubernetes/pvc"
+  volume_size = var.gke_volume_size
+  count       = var.gcp-gke-deploy ? 1 : 0
+}
+
+module "data" {
+  depends_on = [module.persistent_volume]
+  source     = "./modules/kubernetes/shared-storage"
+  pvc-name   = module.persistent_volume[0].pvc-name
 }

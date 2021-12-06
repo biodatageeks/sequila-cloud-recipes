@@ -22,3 +22,7 @@ variable "preemptible" {
   type    = bool
   default = true
 }
+
+variable "bucket_name" {
+  type = string
+}
