@@ -1,5 +1,7 @@
 # sequila-recipes
 ![example workflow](https://github.com/biodatageeks/sequila-cloud-recipes/actions/workflows/default.yml/badge.svg?branch=master)
+[![sequila version](https://img.shields.io/maven-central/v/org.biodatageeks/sequila_2.12)](https://img.shields.io/maven-central/v/org.biodatageeks/sequila_2.12)
+[![pysequila version](https://badge.fury.io/py/pysequila.svg)](https://pypi.org/project/pysequila/)
 
 SeQuiLa recipes, examples and other cloud-related content demonstrating
 how to run SeQuila jobs in the cloud.
@@ -28,6 +30,7 @@ Table of Contents
     * [GKE](#gke)
         * [Deploy](#deploy-1)
         * [Run](#run-1)
+        * [Cleanup](#cleanup-1)
 * [Development and contribution](#development-and-contribution)
     * [Setup pre-commit checks](#setup-pre-commit-checks)
 * [Terraform doc](#terraform-doc)
@@ -47,15 +50,15 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
    1. setup distributed object storage
    2. copy test data
    3. setup computing environment
-   4. run a test PySeQuiLa job using PySpark
+   4. run a test PySeQuiLa job using PySpark using [spark-on-k8s-operator](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator)
 # Modules statuses
 ## GCP
 
 * [Dataproc](#Dataproc) :white_check_mark: 
-* GKE (Google Kubernetes Engine) :white_check_mark:
+* [GKE (Google Kubernetes Engine)](#GKE) :white_check_mark:
 
 ## Azure
-* Databricks: :interrobang:
+* Databricks: :interrobang: (currently not supported)
 * HDInsight: :soon:
 * AKS (Azure Kubernetes Service): :soon: 
 
@@ -144,6 +147,12 @@ sparkctl create jobs/gcp/gke/pysequila.yaml
 After a while you will be able to check the logs:
 ```bash
 sparkctl log -f pysequila
+```
+![img.png](doc/images/gke-job.png)
+
+### Cleanup
+```bash
+terraform destroy -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars
 ```
 
 # Development and contribution
