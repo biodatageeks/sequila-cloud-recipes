@@ -9,6 +9,7 @@ Table of Contents
 =================
 
 * [Disclaimer](#disclaimer)
+* [Demo scenario](#demo-scenario)
 * [Modules statuses](#modules-statuses)
     * [GCP](#gcp)
     * [Azure](#azure)
@@ -23,6 +24,7 @@ Table of Contents
     * [Dataproc](#dataproc)
         * [Deploy](#deploy)
         * [Run](#run)
+        * [Cleanup](#cleanup)
     * [GKE](#gke)
         * [Deploy](#deploy-1)
         * [Run](#run-1)
@@ -36,6 +38,15 @@ as [checkov](https://www.checkov.io/), [tflint](https://github.com/terraform-lin
 but some security tweaks have been disabled for the sake of simplicity. Some cloud deployments best practices has been intentionally skipped
 as well. Check code comments for details.
 
+# Demo scenario
+1. The presented scenario can be deployed on one of the main cloud providers: Azure(Microsoft), AWS(Amazon) and GCP(Google).
+2. For each cloud two options are presented - deployment on managed Hadoop ecosystem (Azure - HDInsight, AWS - EMR, GCP - Dataproc) or
+or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
+3. Scenario includes the following steps:
+   1. setup distributed object storage
+   2. copy test data
+   3. setup computing environment
+   4. run a test PySeQuiLa job using PySpark
 # Modules statuses
 ## GCP
 
@@ -69,6 +80,8 @@ databricks configure --token
 
 # GCP
 ## Login
+1. Install [Cloud SDK](https://cloud.google.com/sdk/docs/install)
+2. Authenticate
 ```bash
 gcloud auth application-default login
 # set default project
@@ -91,12 +104,17 @@ terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-dataproc.tfvars
 ```
 ### Run
 ```bash
-gcloud workflows execute pysequila-workflow --location europe-west2
+gcloud workflows execute pysequila-workflow --location ${TF_VAR_region}
 ```
 or from GCP UI Console:
 ![img.png](doc/images/dataproc-workflow.png)
 
+![img.png](doc/images/dataproc-job.png)
 
+### Cleanup
+```bash
+terraform destroy -var-file=env/gcp.tfvars -var-file=env/gcp-dataproc.tfvars
+```
 ## GKE
 ### Deploy
 ```bash
@@ -106,16 +124,26 @@ terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars
 ### Run
 1. Connect to the K8S cluster, e.g.:
 ```bash
-gcloud container clusters get-credentials tbd-tbd-devel-cluster --zone europe-west2-b --project tbd-tbd-devel
+gcloud container clusters get-credentials ${TF_VAR_project_name}-cluster --zone ${TF_VAR_zone} --project ${TF_VAR_project_name}
 # check connectivity
- kubectl get nodes
+kubectl get nodes
 NAME                                                  STATUS   ROLES    AGE   VERSION
 gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-8wqh   Ready    <none>   25m   v1.21.5-gke.1302
 gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-dlr1   Ready    <none>   25m   v1.21.5-gke.1302
 gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-r5l3   Ready    <none>   25m   v1.21.5-gke.1302
-
 ```
-
+2. Install [sparkctl](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/sparkctl) (recommended) or use `kubectl`: \
+:bulb: Please replace references to staging bucket with your bucket, e.g.
+```yaml
+mainApplicationFile: gs://tbd-tbd-devel-staging/jobs/pysequila/sequila-pileup-gke.py
+```
+```bash
+sparkctl create jobs/gcp/gke/pysequila.yaml
+```
+After a while you will be able to check the logs:
+```bash
+sparkctl log -f pysequila
+```
 
 # Development and contribution
 ## Setup pre-commit checks

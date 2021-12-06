@@ -2,7 +2,7 @@ variable "project_name" {
   type        = string
   description = "Prefix to use for naming resource group and workspace"
 }
-variable "location" {
+variable "region" {
   type        = string
   description = "Location of the cluster"
 }

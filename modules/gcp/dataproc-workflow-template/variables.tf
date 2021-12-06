@@ -3,7 +3,7 @@ variable "project_name" {
   description = "Name of the GCP project"
 }
 
-variable "location" {
+variable "region" {
   type        = string
   description = "Location of the cluster"
 }
@@ -26,8 +26,7 @@ variable "main_python_file_uri" {
 }
 
 variable "pysequila_version" {
-  type    = string
-  default = "0.3.2"
+  type = string
 }
 
 variable "sequila_version" {

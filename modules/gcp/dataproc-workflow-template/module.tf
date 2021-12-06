@@ -15,7 +15,7 @@ resource "google_dataproc_workflow_template" "dataproc_workflow_template" {
   depends_on = [google_project_service.workflowexecution, google_project_service.dataproc]
   project    = var.project_name
   name       = "pysequila-workflow"
-  location   = var.location
+  location   = var.region
   placement {
     managed_cluster {
       cluster_name = "${var.project_name}-cluster"
@@ -28,7 +28,7 @@ resource "google_dataproc_workflow_template" "dataproc_workflow_template" {
         }
         staging_bucket = var.bucket_name
         initialization_actions {
-          executable_file   = "gs://goog-dataproc-initialization-actions-${var.location}/python/pip-install.sh"
+          executable_file   = "gs://goog-dataproc-initialization-actions-${var.region}/python/pip-install.sh"
           execution_timeout = "600s"
         }
         initialization_actions {

@@ -68,15 +68,17 @@ resource "google_storage_bucket_iam_binding" "binding" {
 
 #tfsec:ignore:google-iam-no-privileged-service-accounts
 resource "google_project_iam_member" "serviceUsage" {
-  project = var.project_name
-  role    = "roles/serviceusage.serviceUsageAdmin"
-  member  = "serviceAccount:${google_service_account.tbd-lab.email}"
+  depends_on = [google_service_account.tbd-lab]
+  project    = var.project_name
+  role       = "roles/serviceusage.serviceUsageAdmin"
+  member     = "serviceAccount:${google_service_account.tbd-lab.email}"
 }
 
 #tfsec:ignore:google-gke-enable-auto-repair
 #tfsec:ignore:google-gke-node-pool-uses-cos
 #tfsec:ignore:google-gke-enable-auto-upgrade
 resource "google_container_node_pool" "primary_preemptible_nodes" {
+  depends_on = [google_service_account.tbd-lab]
   #checkov:skip=CKV_GCP_69:"Ensure the GKE Metadata Server is Enabled"
   #checkov:skip=CKV_GCP_9:"Ensure 'Automatic node repair' is enabled for Kubernetes Clusters"
   #checkov:skip=CKV_GCP_68:"Ensure Secure Boot for Shielded GKE Nodes is Enabled"
