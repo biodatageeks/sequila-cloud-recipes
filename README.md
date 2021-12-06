@@ -1,6 +1,6 @@
 # sequila-recipes
 ![example workflow](https://github.com/biodatageeks/sequila-cloud-recipes/actions/workflows/default.yml/badge.svg?branch=master)
-[![sequila version](https://img.shields.io/maven-central/v/org.biodatageeks/sequila_2.12)](https://img.shields.io/maven-central/v/org.biodatageeks/sequila_2.12)
+[![sequila version](https://img.shields.io/maven-central/v/org.biodatageeks/sequila_2.12)](https://search.maven.org/artifact/org.biodatageeks/sequila_2.12)
 [![pysequila version](https://badge.fury.io/py/pysequila.svg)](https://pypi.org/project/pysequila/)
 
 SeQuiLa recipes, examples and other cloud-related content demonstrating
@@ -152,6 +152,7 @@ sparkctl log -f pysequila
 
 ### Cleanup
 ```bash
+sparkctl delete pysequila
 terraform destroy -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars
 ```
 
