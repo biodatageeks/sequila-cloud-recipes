@@ -16,8 +16,10 @@ Table of Contents
     * [GCP](#gcp)
     * [Azure](#azure)
     * [AWS](#aws)
+* [Init backends](#init)
 * [Azure](#azure-1)
     * [Login](#login)
+    * [AKS](#aks)
 * [Databricks](#databricks)
     * [Login](#login-1)
 * [GCP](#gcp-1)
@@ -50,7 +52,7 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
    1. setup distributed object storage
    2. copy test data
    3. setup computing environment
-   4. run a test PySeQuiLa job using PySpark using [spark-on-k8s-operator](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator)
+   4. run a test PySeQuiLa job using PySpark using YARN or [spark-on-k8s-operator](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator)
 # Modules statuses
 ## GCP
 
@@ -60,19 +62,61 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
 ## Azure
 * Databricks: :interrobang: (currently not supported)
 * HDInsight: :soon:
-* AKS (Azure Kubernetes Service): :soon: 
+* [AKS (Azure Kubernetes Service)](#AKS): :white_check_mark:
 
 ## AWS
 * EMR: :soon:
 * EKS(Elastic Kubernetes Service): :soon:
 
+# Init
+```
+terraform init
+```
 # Azure
 ## Login
-Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) and set default subscription
 ```bash
 az login
+az account set --subscription "Azure subscription 1"
 ```
-# Databricks
+
+## AKS
+### Deploy
+```bash
+terraform apply -var-file=env/azure.tfvars -var-file=env/azure-aks.tfvars -var-file=env/_all.tfvars
+```
+### Run
+1. Connect to the K8S cluster, e.g.:
+```bash
+az aks get-credentials --resource-group sequila-resources --name sequila-aks1
+# check connectivity
+kubectl get nodes
+NAME                              STATUS   ROLES   AGE   VERSION
+aks-default-37875945-vmss000002   Ready    agent   59m   v1.20.9
+aks-default-37875945-vmss000003   Ready    agent   59m   v1.20.9
+```
+2. Install [sparkctl](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/sparkctl) (recommended) or use `kubectl`: \
+   :bulb: Please replace references to staging bucket with your storageAccount, e.g.
+```yaml
+mainApplicationFile: wasb://sequila@sequilauxlw3g9fznm.blob.core.windows.net/jobs/pysequila/sequila-pileup-aks.py
+```
+and
+```bash
+sparkctl create jobs/azure/aks/pysequila.yaml
+```
+After a while you will be able to check the logs:
+```bash
+sparkctl log -f pysequila
+```
+![img.png](doc/images/aks-job.png)
+
+### Cleanup
+```bash
+sparkctl delete pysequila
+terraform destroy -var-file=env/azure.tfvars -var-file=env/azure-aks.tfvars -var-file=env/_all.tfvars
+```
+
+## Databricks
 ## Login
 1. Install [databricks-cli](https://docs.databricks.com/dev-tools/cli/index.html)
 2. Generate PAT from [Databricks UI](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
@@ -104,7 +148,7 @@ Above variables are necessary for both `Dataproc` and `GKE` setups.
 ## Dataproc
 ### Deploy
 ```bash
-terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-dataproc.tfvars
+terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-dataproc.tfvars -var-file=env/_all.tfvars
 ```
 ### Run
 ```bash
@@ -117,12 +161,12 @@ or from GCP UI Console:
 
 ### Cleanup
 ```bash
-terraform destroy -var-file=env/gcp.tfvars -var-file=env/gcp-dataproc.tfvars
+terraform destroy -var-file=env/gcp.tfvars -var-file=env/gcp-dataproc.tfvars -var-file=env/_all.tfvars
 ```
 ## GKE
 ### Deploy
 ```bash
-terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars
+terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars -var-file=env/_all.tfvars
 ```
 
 ### Run
@@ -141,6 +185,7 @@ gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-r5l3   Ready    <none>   25m   v1
 ```yaml
 mainApplicationFile: gs://tbd-tbd-devel-staging/jobs/pysequila/sequila-pileup-gke.py
 ```
+and
 ```bash
 sparkctl create jobs/gcp/gke/pysequila.yaml
 ```
@@ -153,7 +198,7 @@ sparkctl log -f pysequila
 ### Cleanup
 ```bash
 sparkctl delete pysequila
-terraform destroy -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars
+terraform destroy -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars -var-file=env/_all.tfvars
 ```
 
 # Development and contribution
@@ -185,12 +230,18 @@ pre-commit install
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_data"></a> [data](#module\_data) | ./modules/kubernetes/shared-storage | n/a |
+| <a name="module_aks"></a> [aks](#module\_aks) | ./modules/azure/aks | n/a |
+| <a name="module_azure-resources"></a> [azure-resources](#module\_azure-resources) | ./modules/azure/resource-mgmt | n/a |
+| <a name="module_azure-staging-blob"></a> [azure-staging-blob](#module\_azure-staging-blob) | ./modules/azure/staging-blob | n/a |
+| <a name="module_data-aks"></a> [data-aks](#module\_data-aks) | ./modules/kubernetes/shared-storage | n/a |
+| <a name="module_data-gke"></a> [data-gke](#module\_data-gke) | ./modules/kubernetes/shared-storage | n/a |
 | <a name="module_gcp-dataproc-sequila-job"></a> [gcp-dataproc-sequila-job](#module\_gcp-dataproc-sequila-job) | ./modules/gcp/dataproc-workflow-template | n/a |
 | <a name="module_gcp-staging-bucket"></a> [gcp-staging-bucket](#module\_gcp-staging-bucket) | ./modules/gcp/staging-bucket | n/a |
 | <a name="module_gke"></a> [gke](#module\_gke) | ./modules/gcp/gke | n/a |
-| <a name="module_persistent_volume"></a> [persistent\_volume](#module\_persistent\_volume) | ./modules/kubernetes/pvc | n/a |
-| <a name="module_spark-on-k8s-operator"></a> [spark-on-k8s-operator](#module\_spark-on-k8s-operator) | ./modules/kubernetes/spark-on-k8s-operator | n/a |
+| <a name="module_persistent_volume-aks"></a> [persistent\_volume-aks](#module\_persistent\_volume-aks) | ./modules/kubernetes/pvc | n/a |
+| <a name="module_persistent_volume-gke"></a> [persistent\_volume-gke](#module\_persistent\_volume-gke) | ./modules/kubernetes/pvc | n/a |
+| <a name="module_spark-on-k8s-operator-aks"></a> [spark-on-k8s-operator-aks](#module\_spark-on-k8s-operator-aks) | ./modules/kubernetes/spark-on-k8s-operator | n/a |
+| <a name="module_spark-on-k8s-operator-gke"></a> [spark-on-k8s-operator-gke](#module\_spark-on-k8s-operator-gke) | ./modules/kubernetes/spark-on-k8s-operator | n/a |
 
 ## Resources
 
@@ -202,6 +253,7 @@ pre-commit install
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_azure-aks-deploy"></a> [azure-aks-deploy](#input\_azure-aks-deploy) | n/a | `bool` | `false` | no |
 | <a name="input_azure-databricks-deploy"></a> [azure-databricks-deploy](#input\_azure-databricks-deploy) | n/a | `bool` | `false` | no |
 | <a name="input_azure-databricks-project_prefix"></a> [azure-databricks-project\_prefix](#input\_azure-databricks-project\_prefix) | Prefix to use for naming resource group and workspace | `string` | `"demo-sequila"` | no |
 | <a name="input_azure-databricks-sku"></a> [azure-databricks-sku](#input\_azure-databricks-sku) | The sku to use for the Databricks Workspace. Possible values are standard, premium, or trial. | `string` | `"trial"` | no |
@@ -209,16 +261,17 @@ pre-commit install
 | <a name="input_gcp-dataproc-deploy"></a> [gcp-dataproc-deploy](#input\_gcp-dataproc-deploy) | n/a | `bool` | `false` | no |
 | <a name="input_gcp-gke-deploy"></a> [gcp-gke-deploy](#input\_gcp-gke-deploy) | n/a | `bool` | `false` | no |
 | <a name="input_gke_machine_type"></a> [gke\_machine\_type](#input\_gke\_machine\_type) | n/a | `string` | `"e2-standard-2"` | no |
-| <a name="input_gke_max_node_count"></a> [gke\_max\_node\_count](#input\_gke\_max\_node\_count) | n/a | `number` | n/a | yes |
+| <a name="input_gke_max_node_count"></a> [gke\_max\_node\_count](#input\_gke\_max\_node\_count) | n/a | `number` | `3` | no |
 | <a name="input_gke_preemptible"></a> [gke\_preemptible](#input\_gke\_preemptible) | n/a | `bool` | `true` | no |
-| <a name="input_gke_volume_size"></a> [gke\_volume\_size](#input\_gke\_volume\_size) | n/a | `string` | `"1Gi"` | no |
-| <a name="input_project_name"></a> [project\_name](#input\_project\_name) | Prefix to use for naming resource group and workspace | `string` | n/a | yes |
+| <a name="input_project_name"></a> [project\_name](#input\_project\_name) | Prefix to use for naming resource group and workspace | `string` | `"test"` | no |
 | <a name="input_pysequila_version"></a> [pysequila\_version](#input\_pysequila\_version) | n/a | `string` | n/a | yes |
-| <a name="input_region"></a> [region](#input\_region) | Location of the cluster | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | Location of the cluster | `string` | `"test_region"` | no |
 | <a name="input_sequila_version"></a> [sequila\_version](#input\_sequila\_version) | n/a | `string` | n/a | yes |
 | <a name="input_spark_version"></a> [spark\_version](#input\_spark\_version) | n/a | `string` | `"3.1.2"` | no |
-| <a name="input_zone"></a> [zone](#input\_zone) | Zone of the cluster | `string` | n/a | yes |
+| <a name="input_volume_size"></a> [volume\_size](#input\_volume\_size) | n/a | `string` | `"1Gi"` | no |
+| <a name="input_zone"></a> [zone](#input\_zone) | Zone of the cluster | `string` | `"test_zone"` | no |
 
 ## Outputs
 
 No outputs.
+

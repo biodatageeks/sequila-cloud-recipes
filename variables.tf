@@ -32,15 +32,18 @@ variable "gcp-dataproc-deploy" {
 variable "project_name" {
   type        = string
   description = "Prefix to use for naming resource group and workspace"
+  default     = "test"
 }
 variable "region" {
   type        = string
   description = "Location of the cluster"
+  default     = "test_region"
 }
 
 variable "zone" {
   type        = string
   description = "Zone of the cluster"
+  default     = "test_zone"
 }
 
 variable "data_files" {
@@ -54,7 +57,8 @@ variable "gcp-gke-deploy" {
 }
 
 variable "gke_max_node_count" {
-  type = number
+  type    = number
+  default = 3
 }
 
 variable "gke_machine_type" {
@@ -67,7 +71,12 @@ variable "gke_preemptible" {
   default = true
 }
 
-variable "gke_volume_size" {
+variable "volume_size" {
   type    = string
   default = "1Gi"
+}
+
+variable "azure-aks-deploy" {
+  type    = bool
+  default = false
 }
