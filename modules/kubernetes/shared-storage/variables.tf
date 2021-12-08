@@ -1,5 +1,5 @@
-variable "vep_version" {
-  default = "104"
-}
-
 variable "pvc-name" {}
+variable "storage_account" {
+  type    = string
+  default = "test"
+}

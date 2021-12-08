@@ -18,8 +18,12 @@ resource "kubernetes_job" "iac-data" {
           command = ["/bin/sh", "-c"]
           args = [<<EOT
             echo "Preparing shared storage for SeQuiLa";
+            apt-get install -y wget;
             mkdir -p /mnt/data/;
-            gsutil rsync gs://tbd-tbd-devel-staging/data/ /mnt/data/;
+            cd /mnt/data/;
+            wget https://${var.storage_account}.blob.core.windows.net/sequila/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta || true;
+            wget https://${var.storage_account}.blob.core.windows.net/sequila/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta.fai || true;
+            gsutil rsync gs://tbd-tbd-devel-staging/data/ /mnt/data/ || true;
             echo "Finished rsync of shared storage"
             EOT
           ]
