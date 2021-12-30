@@ -1,3 +1,9 @@
+terraform {
+  required_providers {
+    kubernetes = "~> 2.7.0"
+  }
+}
+
 resource "kubernetes_persistent_volume_claim" "pvc" {
   metadata {
     name = "data"
