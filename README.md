@@ -53,6 +53,19 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
    2. copy test data
    3. setup computing environment
    4. run a test PySeQuiLa job using PySpark using YARN or [spark-on-k8s-operator](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator)
+
+# Using SeQuiLa cli Docker image
+```bash
+export TF_VAR_project_name=tbd-tbd-devel
+export TF_VAR_region=europe-west2
+export TF_VAR_zone=europe-west2-b
+docker run --rm -it \
+    -e TF_VAR_project_name=${TF_VAR_project_name} \
+    -e TF_VAR_region=${TF_VAR_region} \
+    -e TF_VAR_zone=${TF_VAR_zone} \
+biodatageeks/sequila-cloud-cli:a6c3eb0
+```
+
 # Modules statuses
 ## GCP
 
