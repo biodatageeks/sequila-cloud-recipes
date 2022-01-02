@@ -99,8 +99,15 @@ az account set --subscription "Azure subscription 1"
 
 ## AKS
 ### Deploy
+
+1. Ensure you are in the right subfolder
 ```bash
-terraform apply -var-file=env/azure.tfvars -var-file=env/azure-aks.tfvars -var-file=env/_all.tfvars
+echo $PWD | rev | cut -f1,2 -d'/' | rev
+cloud/azure
+```
+2. Run
+```bash
+terraform apply -var-file=../../env/azure.tfvars -var-file=../../env/azure-aks.tfvars -var-file=../../env/_all.tfvars
 ```
 ### Run
 1. Connect to the K8S cluster, e.g.:
@@ -119,7 +126,7 @@ mainApplicationFile: wasb://sequila@sequilauxlw3g9fznm.blob.core.windows.net/job
 ```
 and
 ```bash
-sparkctl create jobs/azure/aks/pysequila.yaml
+sparkctl create ../../jobs/azure/aks/pysequila.yaml
 ```
 After a while you will be able to check the logs:
 ```bash
@@ -130,7 +137,7 @@ sparkctl log -f pysequila
 ### Cleanup
 ```bash
 sparkctl delete pysequila
-terraform destroy -var-file=env/azure.tfvars -var-file=env/azure-aks.tfvars -var-file=env/_all.tfvars
+terraform destroy -var-file=../../env/azure.tfvars -var-file=../../env/azure-aks.tfvars -var-file=../../env/_all.tfvars
 ```
 
 ## Databricks
@@ -161,7 +168,7 @@ export TF_VAR_region=europe-west2
 export TF_VAR_zone=europe-west2-b
 ```
 Above variables are necessary for both `Dataproc` and `GKE` setups.
-2. Esnure you are in the right subfoleder
+2. Ensure you are in the right subfolder
 ```bash
 echo $PWD | rev | cut -f1,2 -d'/' | rev
 cloud/gcp
@@ -219,7 +226,7 @@ mainApplicationFile: gs://tbd-tbd-devel-staging/jobs/pysequila/sequila-pileup-gk
 ```
 and
 ```bash
-sparkctl create jobs/gcp/gke/pysequila.yaml
+sparkctl create ../../jobs/gcp/gke/pysequila.yaml
 ```
 After a while you will be able to check the logs:
 ```bash
