@@ -60,7 +60,7 @@ resource "google_dataproc_workflow_template" "dataproc_workflow_template" {
     pyspark_job {
       properties = {
         "spark.jars.packages"     = "org.biodatageeks:sequila_2.12:${var.sequila_version},com.google.cloud:google-cloud-nio:0.123.16"
-        "spark.jars.repositories" = "https://zsibio.ii.pw.edu.pl/nexus/repository/maven-snapshots/"
+        "spark.jars.repositories" = "http://zsibio.ii.pw.edu.pl/nexus/repository/maven-snapshots/"
       }
       main_python_file_uri = var.main_python_file_uri
     }

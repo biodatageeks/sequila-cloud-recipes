@@ -36,3 +36,4 @@ variable "sequila_version" {
 variable "bucket_name" {
   type = string
 }
+

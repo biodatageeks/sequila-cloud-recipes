@@ -64,7 +64,10 @@ docker run --rm -it \
     -e TF_VAR_region=${TF_VAR_region} \
     -e TF_VAR_zone=${TF_VAR_zone} \
 biodatageeks/sequila-cloud-cli:a6c3eb0
+
+cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && cd sequila-cloud-recipes
 ```
+
 
 # Modules statuses
 ## GCP
@@ -82,6 +85,7 @@ biodatageeks/sequila-cloud-cli:a6c3eb0
 * EKS(Elastic Kubernetes Service): :soon:
 
 # Init
+Navigate to one of the cloud subfolders e.g. `cd cloud/gcp` and run:
 ```
 terraform init
 ```
@@ -146,7 +150,7 @@ databricks configure --token
 ```bash
 gcloud auth application-default login
 # set default project
-gcloud config set project tbd-tbd-devel
+gcloud config set project $TF_VAR_project_name
 ```
 
 ## General GCP setup
@@ -157,15 +161,30 @@ export TF_VAR_region=europe-west2
 export TF_VAR_zone=europe-west2-b
 ```
 Above variables are necessary for both `Dataproc` and `GKE` setups.
-
+2. Esnure you are in the right subfoleder
+```bash
+echo $PWD | rev | cut -f1,2 -d'/' | rev
+cloud/gcp
+```
 ## Dataproc
 ### Deploy
 ```bash
-terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-dataproc.tfvars -var-file=env/_all.tfvars
+terraform apply -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
 ```
 ### Run
 ```bash
-gcloud workflows execute pysequila-workflow --location ${TF_VAR_region}
+gcloud dataproc workflow-templates instantiate pysequila-workflow --region ${TF_VAR_region}
+
+Waiting on operation [projects/tbd-tbd-devel/regions/europe-west2/operations/36cbc4dc-783c-336c-affd-147d24fa014c].
+WorkflowTemplate [pysequila-workflow] RUNNING
+Creating cluster: Operation ID [projects/tbd-tbd-devel/regions/europe-west2/operations/ef2869b4-d1eb-49d8-ba56-301c666d385b].
+Created cluster: tbd-tbd-devel-cluster-s2ullo6gjaexa.
+Job ID tbd-tbd-devel-job-s2ullo6gjaexa RUNNING
+Job ID tbd-tbd-devel-job-s2ullo6gjaexa COMPLETED
+Deleting cluster: Operation ID [projects/tbd-tbd-devel/regions/europe-west2/operations/0bff879e-1204-4971-ae9e-ccbf9c642847].
+WorkflowTemplate [pysequila-workflow] DONE
+Deleted cluster: tbd-tbd-devel-cluster-s2ullo6gjaexa.
+
 ```
 or from GCP UI Console:
 ![img.png](doc/images/dataproc-workflow.png)
@@ -174,12 +193,12 @@ or from GCP UI Console:
 
 ### Cleanup
 ```bash
-terraform destroy -var-file=env/gcp.tfvars -var-file=env/gcp-dataproc.tfvars -var-file=env/_all.tfvars
+terraform destroy -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
 ```
 ## GKE
 ### Deploy
 ```bash
-terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars -var-file=env/_all.tfvars
+terraform apply -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-gke.tfvars -var-file=../../env/_all.tfvars
 ```
 
 ### Run
@@ -211,7 +230,7 @@ sparkctl log -f pysequila
 ### Cleanup
 ```bash
 sparkctl delete pysequila
-terraform destroy -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars -var-file=env/_all.tfvars
+terraform destroy -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-gke.tfvars -var-file=../../env/_all.tfvars
 ```
 
 # Development and contribution

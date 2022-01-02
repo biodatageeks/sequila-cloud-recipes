@@ -18,27 +18,27 @@ resource "google_storage_bucket" "bucket" {
 resource "google_storage_bucket_object" "sequila-pileup" {
 
   name   = "jobs/pysequila/sequila-pileup.py"
-  source = "jobs/gcp/dataproc/sequila-pileup.py"
+  source = "../../jobs/gcp/dataproc/sequila-pileup.py"
   bucket = google_storage_bucket.bucket.name
 }
 
 resource "google_storage_bucket_object" "sequila-pileup-gke" {
 
   name   = "jobs/pysequila/sequila-pileup-gke.py"
-  source = "jobs/gcp/gke/sequila-pileup.py"
+  source = "../../jobs/gcp/gke/sequila-pileup.py"
   bucket = google_storage_bucket.bucket.name
 }
 
 resource "google_storage_bucket_object" "sequila-data" {
   for_each = toset(var.data_files)
   name     = "data/${each.value}"
-  source   = "data/${each.value}"
+  source   = "../../data/${each.value}"
   bucket   = google_storage_bucket.bucket.name
 }
 
 resource "google_storage_bucket_object" "sequila-init-script" {
   for_each = toset(var.data_files)
   name     = "scripts/setup-data.sh"
-  source   = "scripts/setup-data.sh"
+  source   = "../../scripts/setup-data.sh"
   bucket   = google_storage_bucket.bucket.name
 }
