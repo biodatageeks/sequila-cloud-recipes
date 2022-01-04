@@ -1,6 +1,7 @@
 resource "google_project_service" "tbd-service-iam" {
-  project = var.project_name
-  service = "iam.googleapis.com"
+  depends_on = [google_project_service.tbd-service-gke]
+  project    = var.project_name
+  service    = "iam.googleapis.com"
 
   disable_dependent_services = true
 }
