@@ -53,7 +53,10 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
    2. copy test data
    3. setup computing environment
    4. run a test PySeQuiLa job using PySpark using YARN or [spark-on-k8s-operator](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator)
-
+4. We assume that:
+   1. on GCP: the project 'tbd-tbd-devel' is created and attached to billing account
+   2. on Azzure: the subscription is created (A Google Cloud project is conceptually similar to the Azure subscription, in terms of billing, quotas, and limits).
+   
 # Using SeQuiLa cli Docker image
 ```bash
 export TF_VAR_project_name=tbd-tbd-devel
