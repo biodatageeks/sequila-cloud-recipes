@@ -86,10 +86,11 @@ module "persistent_volume-gke" {
 
 
 module "data-gke" {
-  depends_on = [module.persistent_volume-gke]
-  source     = "../../modules/kubernetes/shared-storage"
-  pvc-name   = module.persistent_volume-gke[0].pvc-name
-  count      = var.gcp-gke-deploy ? 1 : 0
+  depends_on  = [module.persistent_volume-gke]
+  source      = "../../modules/kubernetes/shared-storage"
+  pvc-name    = module.persistent_volume-gke[0].pvc-name
+  bucket_name = module.gcp-staging-bucket[0].bucket_name.id
+  count       = var.gcp-gke-deploy ? 1 : 0
   providers = {
     kubernetes = kubernetes.gke
   }

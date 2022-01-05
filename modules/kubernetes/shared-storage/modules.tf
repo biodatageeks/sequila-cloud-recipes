@@ -29,7 +29,7 @@ resource "kubernetes_job" "iac-data" {
             cd /mnt/data/;
             wget https://${var.storage_account}.blob.core.windows.net/sequila/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta || true;
             wget https://${var.storage_account}.blob.core.windows.net/sequila/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta.fai || true;
-            gsutil rsync gs://tbd-tbd-devel-staging/data/ /mnt/data/ || true;
+            gsutil rsync gs://${var.bucket_name}/data/ /mnt/data/ || true;
             echo "Finished rsync of shared storage"
             EOT
           ]

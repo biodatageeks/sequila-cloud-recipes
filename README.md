@@ -54,7 +54,7 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
    3. setup computing environment
    4. run a test PySeQuiLa job using PySpark using YARN or [spark-on-k8s-operator](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator)
 
-# Using SeQuiLa cli Docker image
+# Using SeQuiLa cli Docker image for GCP
 ```bash
 export TF_VAR_project_name=tbd-tbd-devel
 export TF_VAR_region=europe-west2
@@ -65,7 +65,21 @@ docker run --rm -it \
     -e TF_VAR_zone=${TF_VAR_zone} \
 biodatageeks/sequila-cloud-cli:a6c3eb0
 
-cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && cd sequila-cloud-recipes
+cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && \
+cd sequila-cloud-recipes && \
+cd cloud/gcp
+terraform init
+```
+
+
+# Using SeQuiLa cli Docker image for Azure
+```bash
+docker run --rm -it biodatageeks/sequila-cloud-cli:a6c3eb0
+
+cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && \
+cd sequila-cloud-recipes && \
+cd cloud/azure
+terraform init
 ```
 
 
@@ -84,11 +98,6 @@ cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git &&
 * EMR: :soon:
 * EKS(Elastic Kubernetes Service): :soon:
 
-# Init
-Navigate to one of the cloud subfolders e.g. `cd cloud/gcp` and run:
-```
-terraform init
-```
 # Azure
 ## Login
 Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) and set default subscription
@@ -162,6 +171,8 @@ gcloud config set project $TF_VAR_project_name
 
 ## General GCP setup
 1. Set GCP project-related env variables, e.g.:
+:bulb: If you use our image all the env variables are already set.
+
 ```bash
 export TF_VAR_project_name=tbd-tbd-devel
 export TF_VAR_region=europe-west2
@@ -220,11 +231,8 @@ gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-dlr1   Ready    <none>   25m   v1
 gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-r5l3   Ready    <none>   25m   v1.21.5-gke.1302
 ```
 2. Install [sparkctl](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/sparkctl) (recommended) or use `kubectl`: \
-:bulb: Please replace references to staging bucket with your bucket, e.g.
-```yaml
-mainApplicationFile: gs://tbd-tbd-devel-staging/jobs/pysequila/sequila-pileup-gke.py
-```
-and
+:bulb: If you use our image all the tools are already installed.
+
 ```bash
 sparkctl create ../../jobs/gcp/gke/pysequila.yaml
 ```
