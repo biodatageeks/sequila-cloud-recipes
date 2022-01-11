@@ -27,7 +27,7 @@ spec:
   mode: cluster
   image: "docker.io/biodatageeks/spark-py:pysequila-0.3.3-aks"
   imagePullPolicy: Always
-  mainApplicationFile: wasb://sequila@sequilauxlw3g9fznm.blob.core.windows.net/jobs/pysequila/sequila-pileup-aks.py
+  mainApplicationFile: wasb://sequila@sequilalpjf0uj4ruq.blob.core.windows.net/jobs/pysequila/sequila-pileup-aks.py
   sparkVersion: "3.1.2"
   sparkConf:
     spark.kubernetes.executor.deleteOnTermination: "false"

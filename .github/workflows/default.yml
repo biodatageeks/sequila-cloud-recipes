@@ -13,18 +13,37 @@ jobs:
     - uses: actions/checkout@v2
     - uses: hashicorp/setup-terraform@v1
 
-    - name: Terraform fmt
-      id: fmt
+    - name: Terraform fmt - GCP
+      id: fmt-gcp
       run: terraform fmt -check
       continue-on-error: true
+      working-directory: cloud/gcp
 
-    - name: Terraform Init
-      id: init
+    - name: Terraform Init - GCP
+      id: init-gcp
       run: terraform init
+      working-directory: cloud/gcp
 
-    - name: Terraform Validate
-      id: validate
+    - name: Terraform Validate - GCP
+      id: validate-gcp
       run: terraform validate -no-color
+      working-directory: cloud/gcp
+
+    - name: Terraform fmt - Azure
+      id: fmt-azure
+      run: terraform fmt -check
+      continue-on-error: true
+      working-directory: cloud/azure
+
+    - name: Terraform Init - Azure
+      id: init-azure
+      run: terraform init
+      working-directory: cloud/azure
+
+    - name: Terraform Validate - Azure
+      id: validate-azure
+      run: terraform validate -no-color
+      working-directory: cloud/azure
 
     - uses: actions/github-script@0.9.0
       if: github.event_name == 'pull_request'

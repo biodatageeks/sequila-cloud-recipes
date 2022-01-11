@@ -4,7 +4,7 @@ resource "azurerm_storage_blob" "sequila" {
   storage_account_name   = var.storage_account
   storage_container_name = var.storage_container
   type                   = "Block"
-  source                 = "data/${each.value}"
+  source                 = "../../data/${each.value}"
 }
 
 
@@ -28,7 +28,7 @@ locals {
 
 resource "local_file" "foo" {
   content  = local.py_file
-  filename = "jobs/azure/aks/sequila-pileup.py"
+  filename = "../../jobs/azure/aks/sequila-pileup.py"
 }
 
 
@@ -37,6 +37,6 @@ resource "azurerm_storage_blob" "sequila-pileup" {
   storage_account_name   = var.storage_account
   storage_container_name = var.storage_container
   type                   = "Block"
-  source                 = "jobs/azure/aks/sequila-pileup.py"
+  source                 = "../../jobs/azure/aks/sequila-pileup.py"
 
 }

@@ -53,6 +53,36 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
    2. copy test data
    3. setup computing environment
    4. run a test PySeQuiLa job using PySpark using YARN or [spark-on-k8s-operator](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator)
+
+# Using SeQuiLa cli Docker image for GCP
+```bash
+export TF_VAR_project_name=tbd-tbd-devel
+export TF_VAR_region=europe-west2
+export TF_VAR_zone=europe-west2-b
+docker run --rm -it \
+    -e TF_VAR_project_name=${TF_VAR_project_name} \
+    -e TF_VAR_region=${TF_VAR_region} \
+    -e TF_VAR_zone=${TF_VAR_zone} \
+biodatageeks/sequila-cloud-cli:a6c3eb0
+
+cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && \
+cd sequila-cloud-recipes && \
+cd cloud/gcp
+terraform init
+```
+
+
+# Using SeQuiLa cli Docker image for Azure
+```bash
+docker run --rm -it biodatageeks/sequila-cloud-cli:a6c3eb0
+
+cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && \
+cd sequila-cloud-recipes && \
+cd cloud/azure
+terraform init
+```
+
+
 # Modules statuses
 ## GCP
 
@@ -68,10 +98,6 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
 * EMR: :soon:
 * EKS(Elastic Kubernetes Service): :soon:
 
-# Init
-```
-terraform init
-```
 # Azure
 ## Login
 Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) and set default subscription
@@ -82,8 +108,15 @@ az account set --subscription "Azure subscription 1"
 
 ## AKS
 ### Deploy
+
+1. Ensure you are in the right subfolder
 ```bash
-terraform apply -var-file=env/azure.tfvars -var-file=env/azure-aks.tfvars -var-file=env/_all.tfvars
+echo $PWD | rev | cut -f1,2 -d'/' | rev
+cloud/azure
+```
+2. Run
+```bash
+terraform apply -var-file=../../env/azure.tfvars -var-file=../../env/azure-aks.tfvars -var-file=../../env/_all.tfvars
 ```
 ### Run
 1. Connect to the K8S cluster, e.g.:
@@ -102,7 +135,7 @@ mainApplicationFile: wasb://sequila@sequilauxlw3g9fznm.blob.core.windows.net/job
 ```
 and
 ```bash
-sparkctl create jobs/azure/aks/pysequila.yaml
+sparkctl create ../../jobs/azure/aks/pysequila.yaml
 ```
 After a while you will be able to check the logs:
 ```bash
@@ -113,7 +146,7 @@ sparkctl log -f pysequila
 ### Cleanup
 ```bash
 sparkctl delete pysequila
-terraform destroy -var-file=env/azure.tfvars -var-file=env/azure-aks.tfvars -var-file=env/_all.tfvars
+terraform destroy -var-file=../../env/azure.tfvars -var-file=../../env/azure-aks.tfvars -var-file=../../env/_all.tfvars
 ```
 
 ## Databricks
@@ -133,26 +166,43 @@ databricks configure --token
 ```bash
 gcloud auth application-default login
 # set default project
-gcloud config set project tbd-tbd-devel
+gcloud config set project $TF_VAR_project_name
 ```
 
 ## General GCP setup
 1. Set GCP project-related env variables, e.g.:
+:bulb: If you use our image all the env variables are already set.
+
 ```bash
 export TF_VAR_project_name=tbd-tbd-devel
 export TF_VAR_region=europe-west2
 export TF_VAR_zone=europe-west2-b
 ```
 Above variables are necessary for both `Dataproc` and `GKE` setups.
-
+2. Ensure you are in the right subfolder
+```bash
+echo $PWD | rev | cut -f1,2 -d'/' | rev
+cloud/gcp
+```
 ## Dataproc
 ### Deploy
 ```bash
-terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-dataproc.tfvars -var-file=env/_all.tfvars
+terraform apply -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
 ```
 ### Run
 ```bash
-gcloud workflows execute pysequila-workflow --location ${TF_VAR_region}
+gcloud dataproc workflow-templates instantiate pysequila-workflow --region ${TF_VAR_region}
+
+Waiting on operation [projects/tbd-tbd-devel/regions/europe-west2/operations/36cbc4dc-783c-336c-affd-147d24fa014c].
+WorkflowTemplate [pysequila-workflow] RUNNING
+Creating cluster: Operation ID [projects/tbd-tbd-devel/regions/europe-west2/operations/ef2869b4-d1eb-49d8-ba56-301c666d385b].
+Created cluster: tbd-tbd-devel-cluster-s2ullo6gjaexa.
+Job ID tbd-tbd-devel-job-s2ullo6gjaexa RUNNING
+Job ID tbd-tbd-devel-job-s2ullo6gjaexa COMPLETED
+Deleting cluster: Operation ID [projects/tbd-tbd-devel/regions/europe-west2/operations/0bff879e-1204-4971-ae9e-ccbf9c642847].
+WorkflowTemplate [pysequila-workflow] DONE
+Deleted cluster: tbd-tbd-devel-cluster-s2ullo6gjaexa.
+
 ```
 or from GCP UI Console:
 ![img.png](doc/images/dataproc-workflow.png)
@@ -161,12 +211,12 @@ or from GCP UI Console:
 
 ### Cleanup
 ```bash
-terraform destroy -var-file=env/gcp.tfvars -var-file=env/gcp-dataproc.tfvars -var-file=env/_all.tfvars
+terraform destroy -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
 ```
 ## GKE
 ### Deploy
 ```bash
-terraform apply -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars -var-file=env/_all.tfvars
+terraform apply -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-gke.tfvars -var-file=../../env/_all.tfvars
 ```
 
 ### Run
@@ -181,13 +231,10 @@ gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-dlr1   Ready    <none>   25m   v1
 gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-r5l3   Ready    <none>   25m   v1.21.5-gke.1302
 ```
 2. Install [sparkctl](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/sparkctl) (recommended) or use `kubectl`: \
-:bulb: Please replace references to staging bucket with your bucket, e.g.
-```yaml
-mainApplicationFile: gs://tbd-tbd-devel-staging/jobs/pysequila/sequila-pileup-gke.py
-```
-and
+:bulb: If you use our image all the tools are already installed.
+
 ```bash
-sparkctl create jobs/gcp/gke/pysequila.yaml
+sparkctl create ../../jobs/gcp/gke/pysequila.yaml
 ```
 After a while you will be able to check the logs:
 ```bash
@@ -198,7 +245,7 @@ sparkctl log -f pysequila
 ### Cleanup
 ```bash
 sparkctl delete pysequila
-terraform destroy -var-file=env/gcp.tfvars -var-file=env/gcp-gke.tfvars -var-file=env/_all.tfvars
+terraform destroy -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-gke.tfvars -var-file=../../env/_all.tfvars
 ```
 
 # Development and contribution

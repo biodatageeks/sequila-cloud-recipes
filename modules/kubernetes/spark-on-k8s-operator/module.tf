@@ -1,3 +1,10 @@
+terraform {
+  required_providers {
+    helm = "~> 2.4.1"
+  }
+}
+
+
 resource "helm_release" "spark-operator" {
   name             = "spark-operator"
   repository       = "https://googlecloudplatform.github.io/spark-on-k8s-operator"
