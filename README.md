@@ -53,6 +53,9 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
    2. copy test data
    3. setup computing environment
    4. run a test PySeQuiLa job using PySpark using YARN or [spark-on-k8s-operator](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator)
+   5. We assume that:
+   * on GCP: a project is created and attached to billing account
+   * on Azure: a subscription is created (A Google Cloud project is conceptually similar to the Azure subscription, in terms of billing, quotas, and limits).
 
 # Using SeQuiLa cli Docker image for GCP
 ```bash
