@@ -5,5 +5,6 @@ variable "storage_account" {
 }
 
 variable "bucket_name" {
-  type = string
+  type    = string
+  default = "data"
 }
