@@ -41,11 +41,7 @@ resource "helm_release" "spark-operator" {
 
   set {
     name  = "webhook.enable"
-    value = true
-  }
-  set {
-    name  = "webhook.timeout"
-    value = 30
+    value = false
   }
 }
 
