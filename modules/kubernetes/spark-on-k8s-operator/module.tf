@@ -9,7 +9,7 @@ resource "helm_release" "spark-operator" {
   name             = "spark-operator"
   repository       = "https://googlecloudplatform.github.io/spark-on-k8s-operator"
   chart            = "spark-operator"
-  version          = "1.1.19"
+  version          = "1.1.23"
   namespace        = "default"
   create_namespace = true
 
