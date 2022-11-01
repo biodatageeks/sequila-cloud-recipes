@@ -19,14 +19,16 @@ locals {
   py_file = <<-EOT
   from pysequila import SequilaSession
   import time
+  import os
   sequila = SequilaSession.builder \
     .appName("SeQuiLa") \
     .getOrCreate()
 
   sequila.sql("SET spark.biodatageeks.readAligment.method=disq")
+  os.listdir("/opt/spark/work-dir")
   sequila\
     .pileup(f"gs://${google_storage_bucket.bucket.name}/data/NA12878.multichrom.md.bam",
-            f"/mnt/spark/Homo_sapiens_assembly18_chr1_chrM.small.fasta", False) \
+            f"/opt/spark/work-dir/Homo_sapiens_assembly18_chr1_chrM.small.fasta", False) \
     .show(5)
   EOT
 
@@ -59,17 +61,19 @@ locals {
     type: Python
     pythonVersion: "3"
     mode: cluster
-    image: "docker.io/biodatageeks/spark-py:pysequila-0.3.3"
+    image: "${var.pysequila_image_gke}"
     imagePullPolicy: Always
     mainApplicationFile: gs://${google_storage_bucket.bucket.name}/jobs/pysequila/sequila-pileup-gke.py
-    sparkVersion: "3.1.2"
+    sparkVersion: "3.2.2"
+    deps:
+      files:
+        - gs://${var.project_name}-staging/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta
+        - gs://${var.project_name}-staging/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta.fai
+      filesDownloadDir: "/opt/spark/work-dir"
     sparkConf:
       spark.kubernetes.executor.deleteOnTermination: "false"
-    volumes:
-      - name: "data"
-        persistentVolumeClaim:
-          claimName: data
-          readOnly: true
+      spark.executor.extraClassPath: "/opt/spark/.ivy2/jars/*"
+      spark.driver.extraClassPath: "/opt/spark/.ivy2/jars/*"
     restartPolicy:
       type: OnFailure
       onFailureRetries: 3
@@ -93,10 +97,6 @@ locals {
       memory: "2048m"
       labels:
         version: 3.1.1
-      volumeMounts:
-        - name: data
-          mountPath: /mnt/spark
-          readOnly: true
   EOT
 
 

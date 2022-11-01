@@ -6,6 +6,9 @@ module "gcp-staging-bucket" {
   region       = var.region
   data_files   = var.data_files
   count        = (var.gcp-dataproc-deploy || var.gcp-gke-deploy) ? 1 : 0
+  pysequila_version = var.pysequila_version
+  sequila_version = var.sequila_version
+  pysequila_image_gke = var.pysequila_image_gke
 }
 
 
@@ -75,8 +78,10 @@ module "spark-on-k8s-operator-gke" {
 module "persistent_volume-gke" {
   depends_on    = [module.gke]
   source        = "../../modules/kubernetes/pvc"
-  volume_size   = var.volume_size
+  volume_size_gb   = var.volume_size
   storage_class = "standard"
+  project_name   = var.project_name
+  zone           = var.zone
   count         = var.gcp-gke-deploy ? 1 : 0
   providers = {
     kubernetes = kubernetes.gke
