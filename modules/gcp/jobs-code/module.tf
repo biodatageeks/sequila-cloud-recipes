@@ -25,10 +25,9 @@ locals {
     .getOrCreate()
 
   sequila.sql("SET spark.biodatageeks.readAligment.method=disq")
-  os.listdir("/opt/spark/work-dir")
   sequila\
     .pileup(f"gs://${google_storage_bucket.bucket.name}/data/NA12878.multichrom.md.bam",
-            f"/opt/spark/work-dir/Homo_sapiens_assembly18_chr1_chrM.small.fasta", False) \
+            f"Homo_sapiens_assembly18_chr1_chrM.small.fasta", False) \
     .show(5)
   EOT
 
@@ -63,7 +62,7 @@ locals {
     mode: cluster
     image: "${var.pysequila_image_gke}"
     imagePullPolicy: Always
-    mainApplicationFile: gs://${google_storage_bucket.bucket.name}/jobs/pysequila/sequila-pileup-gke.py
+    mainApplicationFile: gs://${google_storage_bucket.bucket.name}/jobs/pysequila/sequila-pileup.py
     sparkVersion: "3.2.2"
     deps:
       files:
@@ -105,7 +104,7 @@ locals {
 
 resource "local_file" "py_file" {
   content  = local.py_file
-  filename = "../../jobs/gcp/gke/sequila-pileup.py"
+  filename = "../../jobs/gcp/sequila-pileup.py"
 }
 
 
@@ -117,14 +116,7 @@ resource "local_file" "deployment_file" {
 resource "google_storage_bucket_object" "sequila-pileup" {
 
   name   = "jobs/pysequila/sequila-pileup.py"
-  source = "../../jobs/gcp/dataproc/sequila-pileup.py"
-  bucket = google_storage_bucket.bucket.name
-}
-
-resource "google_storage_bucket_object" "sequila-pileup-gke" {
-
-  name   = "jobs/pysequila/sequila-pileup-gke.py"
-  source = "../../jobs/gcp/gke/sequila-pileup.py"
+  source = "../../jobs/gcp/sequila-pileup.py"
   bucket = google_storage_bucket.bucket.name
 }
 
@@ -135,6 +127,7 @@ resource "google_storage_bucket_object" "sequila-data" {
   bucket   = google_storage_bucket.bucket.name
 }
 
+## setup script for dataproc
 resource "google_storage_bucket_object" "sequila-init-script" {
   for_each = toset(var.data_files)
   name     = "scripts/setup-data.sh"

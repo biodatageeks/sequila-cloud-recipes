@@ -1,7 +1,7 @@
 
 #### GCP: Storage
-module "gcp-staging-bucket" {
-  source       = "../../modules/gcp/staging-bucket"
+module "gcp-jobs-code" {
+  source       = "../../modules/gcp/jobs-code"
   project_name = var.project_name
   region       = var.region
   data_files   = var.data_files
@@ -14,30 +14,37 @@ module "gcp-staging-bucket" {
 
 #### GCP: DATAPROC
 module "gcp-dataproc-sequila-job" {
-  depends_on           = [module.gcp-staging-bucket]
+  depends_on           = [module.gcp-jobs-code]
   source               = "../../modules/gcp/dataproc-workflow-template"
   project_name         = var.project_name
   region               = var.region
   zone                 = var.zone
-  main_python_file_uri = module.gcp-staging-bucket[0].output_name
-  bucket_name          = module.gcp-staging-bucket[0].bucket_name.id
+  main_python_file_uri = module.gcp-jobs-code[0].output_name
+  bucket_name          = module.gcp-jobs-code[0].bucket_name.id
   sequila_version      = var.sequila_version
   pysequila_version    = var.pysequila_version
   count                = var.gcp-dataproc-deploy ? 1 : 0
 }
+resource "google_container_registry" "registry" {
+  project  = var.project_name
+  location = "EU"
+  count                = var.gcp-dataproc-deploy ? 1 : 0
+}
+
+
 
 #### END GCP: DATAPROC
 
 #### GCP: GKE
 module "gke" {
-  depends_on     = [module.gcp-staging-bucket]
+  depends_on     = [module.gcp-jobs-code]
   source         = "../../modules/gcp/gke"
   project_name   = var.project_name
   zone           = var.zone
   machine_type   = var.gke_machine_type
   max_node_count = var.gke_max_node_count
   preemptible    = var.gke_preemptible
-  bucket_name    = module.gcp-staging-bucket[0].bucket_name.id
+  bucket_name    = module.gcp-jobs-code[0].bucket_name.id
   count          = var.gcp-gke-deploy ? 1 : 0
 }
 
