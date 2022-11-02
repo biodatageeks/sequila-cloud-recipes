@@ -73,32 +73,4 @@ module "spark-on-k8s-operator-gke" {
   }
 }
 
-
-
-module "persistent_volume-gke" {
-  depends_on    = [module.gke]
-  source        = "../../modules/kubernetes/pvc"
-  volume_size_gb   = var.volume_size
-  storage_class = "standard"
-  project_name   = var.project_name
-  zone           = var.zone
-  count         = var.gcp-gke-deploy ? 1 : 0
-  providers = {
-    kubernetes = kubernetes.gke
-  }
-}
-
-
-
-module "data-gke" {
-  depends_on  = [module.persistent_volume-gke]
-  source      = "../../modules/kubernetes/shared-storage"
-  pvc-name    = module.persistent_volume-gke[0].pvc-name
-  bucket_name = module.gcp-staging-bucket[0].bucket_name.id
-  count       = var.gcp-gke-deploy ? 1 : 0
-  providers = {
-    kubernetes = kubernetes.gke
-  }
-}
-
 ### END KUBERNETES: SPARK
