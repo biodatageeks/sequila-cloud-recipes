@@ -63,13 +63,14 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
 
 | Cloud | Service   |Release        | Spark  | SeQuiLa |PySeQuila| Image tag*  |
 |-------|-----------|---------------|--------|---------|---------|--------------|
-| GCP   | GKE       |1.23.8-gke.1900              | 3.2.2  | 1.1.0   | 0.4.0   | docker.io/biodatageeks/spark-py:pysequila-0.3.4-gke-b3c836e|
+| GCP   | GKE       |1.23.8-gke.1900              | 3.2.2  | 1.1.0   | 0.4.1   | docker.io/biodatageeks/spark-py:pysequila-0.3.4-gke-b3c836e|
 | GCP   | Dataproc  |2.0.27-ubuntu18| 3.1.3  | 1.0.0   | 0.3.3   |   -|
-| GCP   | Dataproc Serverless|1.0.21| 3.2.2  | 1.1.0   | 0.4.0   | gcr.io/${TF_VAR_project_name}/spark-py:pysequila-0.3.4-dataproc-b3c836e  |
+| GCP   | Dataproc Serverless|1.0.21| 3.2.2  | 1.1.0   | 0.4.1   | gcr.io/${TF_VAR_project_name}/spark-py:pysequila-0.3.4-dataproc-b3c836e  |
+| Azure | AKS       |???|3.2.2|1.1.0|0.4.1|
 
 ```bash
-export TF_VAR_pysequila_version=0.3.4
-export TF_VAR_sequila_version=1.0.1+gef596cf7-SNAPSHOT
+export TF_VAR_pysequila_version=0.4.1
+export TF_VAR_sequila_version=1.1.0
 export TF_VAR_pysequila_image_gke=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_ver}-gke-c8debed
 export TF_VAR_pysequila_image_dataproc=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_ver}-dataproc-c8debed
 ```   
@@ -240,16 +241,17 @@ terraform destroy -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-datapro
 ## Dataprocserverless
 
 ### Deploy
-1.
+1. Prepare infrastructure including a Container registry (see point 2)
 ```bash
 terraform apply -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
-
 ```
-2. 
+2. Since accoring to the [documentation](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers) Dataproc Serverless
+services cannot fetch containers from other registries than GCP ones (in particular from `docker.io`). This is why you need to pull
+a required image from `docker.io` and push it to your project GCR(Google Container Registry), e.g.:
 ```bash
 gcloud auth configure-docker
-docker tag  biodatageeks/spark-py:pysequila-0.3.4-dataproc-b3c836e  gcr.io/bigdata-datascience/spark-py:pysequila-0.3.4-dataproc-b3c836e
-docker push gcr.io/bigdata-datascience/spark-py:pysequila-0.3.4-dataproc-b3c836e
+docker tag  biodatageeks/spark-py:pysequila-0.4.1-dataproc-b3c836e  $TF_VAR_pysequila_image_dataproc
+docker push $TF_VAR_pysequila_image_dataproc
 ```
 ### Run
 ```bash
@@ -297,6 +299,17 @@ name: projects/bigdata-datascience/regions/europe-west2/operations/a746a63b-61ed
 
 ```
 ![img.png](doc/images/dataproc-serverless-job.png)
+
+### Cleanup
+1. Remove Dataproc serverless batch
+```bash
+ gcloud dataproc batches delete pysequila --region=${TF_VAR_region}
+```
+2. Destroy infrastructure
+
+```bash
+terraform apply -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
+```
 
 ## GKE
 ### Deploy

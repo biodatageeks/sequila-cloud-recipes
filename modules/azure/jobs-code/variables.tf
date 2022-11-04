@@ -15,3 +15,18 @@ variable "storage_account" {
 variable "storage_container" {
   type = string
 }
+
+variable "pysequila_version" {
+  type = string
+  description = "PySeQuiLa version"
+}
+
+variable "sequila_version" {
+  type = string
+  description = "SeQuiLa version"
+}
+
+variable "pysequila_image_aks" {
+  type = string
+  description = "AKS PySeQuiLa image"
+}
