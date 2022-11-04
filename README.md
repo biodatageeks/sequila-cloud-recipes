@@ -20,8 +20,6 @@ Table of Contents
 * [Azure](#azure-1)
     * [Login](#login)
     * [AKS](#aks)
-* [Databricks](#databricks)
-    * [Login](#login-1)
 * [GCP](#gcp-1)
     * [Login](#login-2)
     * [General GCP setup](#general-gcp-setup)
@@ -67,7 +65,9 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
 | GCP   | Dataproc  |2.0.27-ubuntu18| 3.1.3  | 1.0.0   | 0.3.3   |   -|
 | GCP   | Dataproc Serverless|1.0.21| 3.2.2  | 1.1.0   | 0.4.1   | gcr.io/${TF_VAR_project_name}/spark-py:pysequila-0.3.4-dataproc-3398602  |
 | Azure | AKS       |1.23.12|3.2.2|1.1.0|0.4.1| docker.io/biodatageeks/spark-py:pysequila-0.4.1-aks-3398602|
-
+| AWS   | EKS|xxx | 3.2.2 | 1.1.0 | 0.4.1 | |
+| AWS   | EMR Serverless|xxx | 3.2.2 | 1.1.0 | 0.4.1 | |
+| AWS   | EMR |xxx | 3.2.2 | 1.1.0 | 0.4.1 | |
 Based on the above table set software versions and Docker images accordingly, e.g.: 
 ```bash
 export TF_VAR_pysequila_version=0.4.1
@@ -116,14 +116,24 @@ terraform init
 * [GKE (Google Kubernetes Engine)](#GKE) :white_check_mark:
 
 ## Azure
-* Databricks: :interrobang: (currently not supported)
-* HDInsight: :soon:
 * [AKS (Azure Kubernetes Service)](#AKS): :white_check_mark:
 
 ## AWS
 * EMR: :soon:
+* EMR Serverless: :soon:
 * EKS(Elastic Kubernetes Service): :soon:
 
+# AWS
+
+## Login
+There are [a few](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration)
+authentication method available. Pick up the one is the most convenient for you - e.g. set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+and `AWS_REGION` environment variables.
+```bash
+export AWS_ACCESS_KEY_ID="anaccesskey"
+export AWS_SECRET_ACCESS_KEY="asecretkey"
+export AWS_REGION="eu-west-1"
+```
 # Azure
 ## Login
 Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) and set default subscription
@@ -175,15 +185,6 @@ sparkctl delete pysequila
 terraform destroy -var-file=../../env/azure.tfvars -var-file=../../env/azure-aks.tfvars -var-file=../../env/_all.tfvars
 ```
 
-## Databricks
-## Login
-1. Install [databricks-cli](https://docs.databricks.com/dev-tools/cli/index.html)
-2. Generate PAT from [Databricks UI](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
-3. Configure cli 
-```bash
-databricks configure --token
-```
-4. Check if `~/.databrickscfg` file has been generated
 
 # GCP
 ## Login
