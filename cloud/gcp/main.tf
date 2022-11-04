@@ -74,6 +74,7 @@ provider "kubernetes" {
 module "spark-on-k8s-operator-gke" {
   depends_on = [module.gke]
   source     = "../../modules/kubernetes/spark-on-k8s-operator"
+  image_tag  = "v1beta2-1.2.3-3.1.2-aks"
   count      = var.gcp-gke-deploy ? 1 : 0
   providers = {
     helm = helm.gke

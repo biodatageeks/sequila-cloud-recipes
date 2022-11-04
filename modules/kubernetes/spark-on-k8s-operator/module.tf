@@ -41,7 +41,7 @@ resource "helm_release" "spark-operator" {
 
   set {
     name  = "image.tag"
-    value = "v1beta2-1.2.3-3.1.2-gke"
+    value = var.image_tag
   }
 }
 

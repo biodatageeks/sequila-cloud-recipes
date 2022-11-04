@@ -71,8 +71,9 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
 ```bash
 export TF_VAR_pysequila_version=0.4.1
 export TF_VAR_sequila_version=1.1.0
-export TF_VAR_pysequila_image_gke=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_ver}-gke-c8debed
-export TF_VAR_pysequila_image_dataproc=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_ver}-dataproc-c8debed
+export TF_VAR_pysequila_image_gke=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_ver}-gke-3398602
+export TF_VAR_pysequila_image_dataproc=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_ver}-dataproc-3398602
+export TF_VAR_pysequila_image_aks=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_ver}-aks-3398602
 ```   
 # Using SeQuiLa cli Docker image for GCP
 ```bash

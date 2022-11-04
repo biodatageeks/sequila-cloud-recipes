@@ -92,14 +92,18 @@ locals {
 
 
 
-resource "local_file" "foo" {
+resource "local_file" "py_file" {
   content  = local.py_file
   filename = "../../jobs/azure/aks/sequila-pileup.py"
 }
 
+resource "local_file" "deployment_file" {
+  content  = local.spark_k8s_deployment
+  filename = "../../jobs/azure/aks/pysequila.yaml"
+}
 
 resource "azurerm_storage_blob" "sequila-pileup" {
-  name                   = "jobs/pysequila/sequila-pileup-aks.py"
+  name                   = "jobs/pysequila/sequila-pileup.py"
   storage_account_name   = var.storage_account
   storage_container_name = var.storage_container
   type                   = "Block"

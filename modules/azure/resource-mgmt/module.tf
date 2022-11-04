@@ -30,7 +30,7 @@ resource "azurerm_storage_account" "sequila_account" {
   location                  = azurerm_resource_group.sequila.location
   account_tier              = "Standard"
   account_replication_type  = "LRS"
-  allow_blob_public_access  = true
+  allow_nested_items_to_be_public  = true
   enable_https_traffic_only = false
 }
 #tfsec:ignore:azure-storage-container-activity-logs-not-public
