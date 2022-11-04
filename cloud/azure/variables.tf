@@ -1,31 +1,19 @@
-variable "azure-databricks-deploy" {
-  type    = bool
-  default = false
-}
-variable "azure-databricks-project_prefix" {
-  type        = string
-  description = "Prefix to use for naming resource group and workspace"
-  default     = "demo-sequila"
-}
-
-variable "azure-databricks-sku" {
-  type        = string
-  description = "The sku to use for the Databricks Workspace. Possible values are standard, premium, or trial."
-  default     = "trial"
-}
 variable "pysequila_version" {
-  type = string
+  type        = string
+  description = "PySeQuiLa version"
 }
 variable "sequila_version" {
-  type = string
+  type        = string
+  description = "SeQuiLa version"
 }
 variable "spark_version" {
-  type    = string
-  default = "3.2.2"
+  type        = string
+  default     = "3.2.2"
+  description = "Apache Spark version"
 }
 
 variable "pysequila_image_aks" {
-  type = string
+  type        = string
   description = "AKS PySeQuiLa image"
 }
 
@@ -33,13 +21,11 @@ variable "pysequila_image_aks" {
 variable "region" {
   type        = string
   description = "Location of the cluster"
-  default     = "test_region"
 }
 
 variable "zone" {
   type        = string
   description = "Zone of the cluster"
-  default     = "test_zone"
 }
 
 variable "data_files" {
@@ -47,12 +33,8 @@ variable "data_files" {
   description = "Data files to copy to staging bucket"
 }
 
-variable "volume_size" {
-  type    = string
-  default = "1Gi"
-}
-
 variable "azure-aks-deploy" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
+  description = "Deploy AKS cluster"
 }

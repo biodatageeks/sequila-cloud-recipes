@@ -7,16 +7,16 @@ module "azure-resources" {
 }
 
 module "azure-staging-blob" {
-  depends_on        = [module.azure-resources]
-  source            = "../../modules/azure/jobs-code"
-  region            = var.region
-  data_files        = var.data_files
-  storage_account   = module.azure-resources[0].storage_account
-  storage_container = module.azure-resources[0].azurerm_storage_container
-  pysequila_version = var.pysequila_version
-  sequila_version =   var.sequila_version
+  depends_on          = [module.azure-resources]
+  source              = "../../modules/azure/jobs-code"
+  region              = var.region
+  data_files          = var.data_files
+  storage_account     = module.azure-resources[0].storage_account
+  storage_container   = module.azure-resources[0].azurerm_storage_container
+  pysequila_version   = var.pysequila_version
+  sequila_version     = var.sequila_version
   pysequila_image_aks = var.pysequila_image_aks
-  count             = var.azure-aks-deploy ? 1 : 0
+  count               = var.azure-aks-deploy ? 1 : 0
 }
 
 

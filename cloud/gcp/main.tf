@@ -1,13 +1,13 @@
 
 #### GCP: Storage
 module "gcp-jobs-code" {
-  source       = "../../modules/gcp/jobs-code"
-  project_name = var.project_name
-  region       = var.region
-  data_files   = var.data_files
-  count        = (var.gcp-dataproc-deploy || var.gcp-gke-deploy) ? 1 : 0
-  pysequila_version = var.pysequila_version
-  sequila_version = var.sequila_version
+  source              = "../../modules/gcp/jobs-code"
+  project_name        = var.project_name
+  region              = var.region
+  data_files          = var.data_files
+  count               = (var.gcp-dataproc-deploy || var.gcp-gke-deploy) ? 1 : 0
+  pysequila_version   = var.pysequila_version
+  sequila_version     = var.sequila_version
   pysequila_image_gke = var.pysequila_image_gke
 }
 
@@ -28,7 +28,7 @@ module "gcp-dataproc-sequila-job" {
 resource "google_container_registry" "registry" {
   project  = var.project_name
   location = "EU"
-  count                = var.gcp-dataproc-deploy ? 1 : 0
+  count    = var.gcp-dataproc-deploy ? 1 : 0
 }
 
 
