@@ -56,7 +56,25 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
    5. We assume that:
    * on GCP: a project is created and attached to billing account
    * on Azure: a subscription is created (A Google Cloud project is conceptually similar to the Azure subscription, in terms of billing, quotas, and limits).
+# Set SeQuiLa and PySeQuiLa versions
+   
+## Support matrix
 
+
+| Cloud | Service   |Release        | Spark  | SeQuiLa |PySeQuila| Image tag*  |
+|-------|-----------|---------------|--------|---------|---------|--------------|
+| GCP   | GKE       |1.23.8-gke.1900              | 3.2.2  | 1.1.0   | 0.4.1   | docker.io/biodatageeks/spark-py:pysequila-0.3.4-gke-b3c836e|
+| GCP   | Dataproc  |2.0.27-ubuntu18| 3.1.3  | 1.0.0   | 0.3.3   |   -|
+| GCP   | Dataproc Serverless|1.0.21| 3.2.2  | 1.1.0   | 0.4.1   | gcr.io/${TF_VAR_project_name}/spark-py:pysequila-0.3.4-dataproc-b3c836e  |
+| Azure | AKS       |???|3.2.2|1.1.0|0.4.1|
+
+```bash
+export TF_VAR_pysequila_version=0.4.1
+export TF_VAR_sequila_version=1.1.0
+export TF_VAR_pysequila_image_gke=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_ver}-gke-3398602
+export TF_VAR_pysequila_image_dataproc=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_ver}-dataproc-3398602
+export TF_VAR_pysequila_image_aks=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_ver}-aks-3398602
+```   
 # Using SeQuiLa cli Docker image for GCP
 ```bash
 export TF_VAR_project_name=tbd-tbd-devel
@@ -66,7 +84,10 @@ docker run --rm -it \
     -e TF_VAR_project_name=${TF_VAR_project_name} \
     -e TF_VAR_region=${TF_VAR_region} \
     -e TF_VAR_zone=${TF_VAR_zone} \
-biodatageeks/sequila-cloud-cli:a6c3eb0
+    -e TF_VAR_pysequila_version=${TF_VAR_pysequila_version} \
+    -e TF_VAR_sequila_version=${TF_VAR_sequila_version} \
+    -e TF_VAR_pysequila_image_gke=${TF_VAR_pysequila_image_gke} \
+biodatageeks/sequila-cloud-cli:7c1ebf6
 
 cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && \
 cd sequila-cloud-recipes && \
@@ -90,6 +111,7 @@ terraform init
 ## GCP
 
 * [Dataproc](#Dataproc) :white_check_mark: 
+* [Dataproc serverless](#Dataprocserverless) :white_check_mark:
 * [GKE (Google Kubernetes Engine)](#GKE) :white_check_mark:
 
 ## Azure
@@ -216,6 +238,80 @@ or from GCP UI Console:
 ```bash
 terraform destroy -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
 ```
+
+## Dataprocserverless
+
+### Deploy
+1. Prepare infrastructure including a Container registry (see point 2)
+```bash
+terraform apply -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
+```
+2. Since accoring to the [documentation](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers) Dataproc Serverless
+services cannot fetch containers from other registries than GCP ones (in particular from `docker.io`). This is why you need to pull
+a required image from `docker.io` and push it to your project GCR(Google Container Registry), e.g.:
+```bash
+gcloud auth configure-docker
+docker tag  biodatageeks/spark-py:pysequila-0.4.1-dataproc-b3c836e  $TF_VAR_pysequila_image_dataproc
+docker push $TF_VAR_pysequila_image_dataproc
+```
+### Run
+```bash
+
+gcloud dataproc batches submit pyspark gs://${TF_VAR_project_name}-staging/jobs/pysequila/sequila-pileup.py \
+  --batch=pysequila \
+  --region=${TF_VAR_region} \
+  --container-image=${TF_VAR_pysequila_image_dataproc} \
+  --version=1.0.21 \
+  --files gs://bigdata-datascience-staging/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta,gs://bigdata-datascience-staging/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta.fai
+
+Batch [pysequila] submitted.
+Pulling image gcr.io/bigdata-datascience/spark-py:pysequila-0.3.4-dataproc-b3c836e
+Image is up to date for sha256:30b836594e0a768211ab209ad02ad3ad0fb1c40c0578b3503f08c4fadbab7c81
+Waiting for container log creation
+PYSPARK_PYTHON=/usr/bin/python3.9
+JAVA_HOME=/usr/lib/jvm/temurin-11-jdk-amd64
+SPARK_EXTRA_CLASSPATH=/opt/spark/.ivy2/jars/*
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/usr/lib/spark/jars/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/spark/.ivy2/jars/org.slf4j_slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.Reload4jLoggerFactory]
+:: loading settings :: file = /etc/spark/conf/ivysettings.xml
++------+---------+-------+---------+--------+--------+-----------+----+-----+
+|contig|pos_start|pos_end|      ref|coverage|countRef|countNonRef|alts|quals|
++------+---------+-------+---------+--------+--------+-----------+----+-----+
+|     1|       34|     34|        C|       1|       1|          0|null| null|
+|     1|       35|     35|        C|       2|       2|          0|null| null|
+|     1|       36|     37|       CT|       3|       3|          0|null| null|
+|     1|       38|     40|      AAC|       4|       4|          0|null| null|
+|     1|       41|     49|CCTAACCCT|       5|       5|          0|null| null|
++------+---------+-------+---------+--------+--------+-----------+----+-----+
+only showing top 5 rows
+
+Batch [pysequila] finished.
+metadata:
+  '@type': type.googleapis.com/google.cloud.dataproc.v1.BatchOperationMetadata
+  batch: projects/bigdata-datascience/locations/europe-west2/batches/pysequila
+  batchUuid: c798a09f-c690-4bc8-9dc8-6be5d1e565e0
+  createTime: '2022-11-04T08:37:17.627022Z'
+  description: Batch
+  operationType: BATCH
+name: projects/bigdata-datascience/regions/europe-west2/operations/a746a63b-61ed-3cca-816b-9f2a4ccae2f8
+
+```
+![img.png](doc/images/dataproc-serverless-job.png)
+
+### Cleanup
+1. Remove Dataproc serverless batch
+```bash
+ gcloud dataproc batches delete pysequila --region=${TF_VAR_region}
+```
+2. Destroy infrastructure
+
+```bash
+terraform apply -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
+```
+
 ## GKE
 ### Deploy
 ```bash

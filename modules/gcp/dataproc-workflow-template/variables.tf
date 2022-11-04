@@ -17,7 +17,7 @@ variable "zone" {
 variable "image_version" {
   type        = string
   description = "Dataproc version"
-  default     = "2.0.24-ubuntu18"
+  default     = "2.0.27-ubuntu18"
 }
 
 variable "main_python_file_uri" {

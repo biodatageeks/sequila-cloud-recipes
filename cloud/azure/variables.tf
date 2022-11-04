@@ -21,8 +21,14 @@ variable "sequila_version" {
 }
 variable "spark_version" {
   type    = string
-  default = "3.1.2"
+  default = "3.2.2"
 }
+
+variable "pysequila_image_aks" {
+  type = string
+  description = "AKS PySeQuiLa image"
+}
+
 
 variable "region" {
   type        = string

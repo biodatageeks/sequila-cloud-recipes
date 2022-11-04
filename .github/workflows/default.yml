@@ -93,3 +93,12 @@ jobs:
             download_external_modules: true # optional: download external terraform modules from public git repositories and terraform registry
             log_level: DEBUG # optional: set log level. Default WARNING
             container_user: 1000 # optional: Define what UID and / or what GID to run the container under to prevent permission issues
+  list-images: # Job that list subdirectories
+      runs-on: self-hosted
+      outputs:
+        dir: ${{ steps.set-dirs.outputs.dir }} # generate output name dir by using inner step output
+      steps:
+        - uses: actions/checkout@v2
+        - id: set-dirs # Give it an id to handle to get step outputs in the outputs key above
+          run: echo "::set-output name=dir::['sequila-cloud-cli','spark-py/gke']"
+          # Define step output named dir base on ls command transformed to JSON thanks to jq

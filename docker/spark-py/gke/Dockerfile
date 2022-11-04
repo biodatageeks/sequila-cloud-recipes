@@ -1,17 +1,9 @@
-FROM gcr.io/spark-operator/spark-py:v3.1.1
-ARG PYSEQUILA_VERSION
-#checkov:skip=CKV_DOCKER_2: "Ensure that HEALTHCHECK instructions have been added to container images"
-#checkov:skip=CKV_DOCKER_3: "Ensure that a user for the container has been created"
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
+
 USER root
-RUN pip install -U pysequila==$PYSEQUILA_VERSION --extra-index-url=https://zsibio.ii.pw.edu.pl/nexus/repository/bdg-pip/simple
-RUN apt-get --allow-releaseinfo-change update && apt-get install -y wget
-RUN cd /opt && rm -rf spark && wget https://dlcdn.apache.org/spark/spark-3.1.2/spark-3.1.2-bin-hadoop3.2.tgz && \
-    tar zxvf spark-3.1.2-bin-hadoop3.2.tgz && mv spark-3.1.2-bin-hadoop3.2 spark
-
-RUN mkdir -p  /opt/spark/.ivy2/ && chown -R 185 /opt/spark/ && chmod 777 -R /opt/spark/
-
 RUN cd /opt/spark/jars && \
     wget https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/gcs-connector/hadoop3-2.2.4/gcs-connector-hadoop3-2.2.4-shaded.jar && \
     wget https://repo1.maven.org/maven2/com/google/cloud/google-cloud-nio/0.120.0-alpha/google-cloud-nio-0.120.0-alpha-shaded.jar
-COPY sequila-assembly-0.7.5.jar /opt/spark/jars/
+RUN chown -R 185 /opt/spark/ && chmod 777 -R /opt/spark/
 USER 185

@@ -33,5 +33,15 @@ resource "helm_release" "spark-operator" {
     name  = "webhook.enable"
     value = false
   }
+
+  set {
+    name  = "image.repository"
+    value = "biodatageeks/spark-operator"
+  }
+
+  set {
+    name  = "image.tag"
+    value = var.image_tag
+  }
 }
 

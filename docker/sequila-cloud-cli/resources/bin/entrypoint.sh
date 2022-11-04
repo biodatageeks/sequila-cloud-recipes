@@ -23,6 +23,11 @@ echo "Location: ${TF_VAR_region}"
 echo "Zone: ${TF_VAR_zone}"
 echo "=========================="
 
+echo "Terraform variables:"
+echo "=========================="
+env | grep -i tf_var
+echo "=========================="
+
 source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use java ${JAVA_VERSION}
 source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use scala ${SCALA_VERSION}
 source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk use sbt ${SBT_VERSION}

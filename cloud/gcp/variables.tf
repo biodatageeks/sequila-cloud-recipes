@@ -1,12 +1,21 @@
 variable "pysequila_version" {
   type = string
+  description = "PySeQuiLa version"
 }
 variable "sequila_version" {
   type = string
+  description = "SeQuiLa version"
 }
+
+variable "pysequila_image_gke" {
+  type = string
+  description = "GKE PySeQuiLa image"
+}
+
 variable "spark_version" {
   type    = string
-  default = "3.1.2"
+  default = "3.2.2"
+  description = "Apache Spark version"
 }
 
 variable "gcp-dataproc-deploy" {
@@ -58,5 +67,5 @@ variable "gke_preemptible" {
 
 variable "volume_size" {
   type    = string
-  default = "1Gi"
+  default = "1"
 }
