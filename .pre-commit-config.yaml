@@ -4,6 +4,10 @@ repos:
   hooks:
     - id: terraform_fmt
     - id: terraform_docs
-    - id: checkov
+      args:
+          - --hook-config=--path-to-file=README.md        # Valid UNIX path. I.e. ../TFDOC.md or docs/README.md etc.
+          - --hook-config=--add-to-existing-file=true     # Boolean. true or false
+          - --hook-config=--create-file-if-not-exist=true
+#    - id: checkov
     - id: terraform_tflint
     - id: terraform_tfsec

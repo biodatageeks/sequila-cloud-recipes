@@ -14,16 +14,16 @@ variable "data_files" {
 
 
 variable "pysequila_version" {
-  type = string
+  type        = string
   description = "PySeQuiLa version"
 }
 
 variable "sequila_version" {
-  type = string
+  type        = string
   description = "SeQuiLa version"
 }
 
 variable "pysequila_image_gke" {
-  type = string
+  type        = string
   description = "GKE PySeQuiLa image"
 }

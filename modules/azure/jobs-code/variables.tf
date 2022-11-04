@@ -17,16 +17,16 @@ variable "storage_container" {
 }
 
 variable "pysequila_version" {
-  type = string
+  type        = string
   description = "PySeQuiLa version"
 }
 
 variable "sequila_version" {
-  type = string
+  type        = string
   description = "SeQuiLa version"
 }
 
 variable "pysequila_image_aks" {
-  type = string
+  type        = string
   description = "AKS PySeQuiLa image"
 }
