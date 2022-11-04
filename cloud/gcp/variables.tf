@@ -21,7 +21,7 @@ variable "spark_version" {
 variable "gcp-dataproc-deploy" {
   type        = bool
   default     = false
-  description = "Deploy Dataproc worflow template"
+  description = "Deploy Dataproc workflow template"
 }
 
 variable "project_name" {

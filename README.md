@@ -67,7 +67,7 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
 | Azure | AKS       |1.23.12|3.2.2|1.1.0|0.4.1| docker.io/biodatageeks/spark-py:pysequila-0.4.1-aks-3398602|
 | AWS   | EKS|xxx | 3.2.2 | 1.1.0 | 0.4.1 | |
 | AWS   | EMR Serverless|xxx | 3.2.2 | 1.1.0 | 0.4.1 | |
-| AWS   | EMR |xxx | 3.2.2 | 1.1.0 | 0.4.1 | |
+| AWS   | EMR |emr-6.6.0 | 3.2.2 | 1.1.0 | 0.4.1 | |
 Based on the above table set software versions and Docker images accordingly, e.g.: 
 ```bash
 export TF_VAR_pysequila_version=0.4.1
@@ -75,6 +75,8 @@ export TF_VAR_sequila_version=1.1.0
 export TF_VAR_pysequila_image_gke=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-gke-3398602
 export TF_VAR_pysequila_image_dataproc=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-dataproc-3398602
 export TF_VAR_pysequila_image_aks=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-aks-3398602
+export TF_VAR_pysequila_image_eks=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-eks-3398602
+
 ```   
 # Using SeQuiLa cli Docker image for GCP
 ```bash

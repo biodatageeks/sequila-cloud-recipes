@@ -1,5 +1,5 @@
 #!/usr/bin/env bash -x
-for tag in gke aks
+for tag in gke aks eks
 do
   cd $tag
   docker build \
