@@ -37,7 +37,6 @@ locals {
   sequila = SequilaSession.builder \
     .appName("SeQuiLa") \
     .getOrCreate()
-
   sequila.sql("SET spark.biodatageeks.readAligment.method=disq")
   sequila\
     .pileup(f"s3a://${aws_s3_bucket.bucket.bucket}/data/NA12878.multichrom.md.bam",
@@ -118,21 +117,14 @@ locals {
 }
 
 
-resource "local_file" "py_file" {
-  content  = local.py_file
-  filename = "../../jobs/aws/sequila-pileup.py"
-}
-
 resource "local_file" "deployment_file" {
   content  = local.spark_k8s_deployment
   filename = "../../jobs/aws/eks/pysequila.yaml"
 }
 
 resource "aws_s3_object" "sequila-pileup" {
-
-  key    = "jobs/pysequila/sequila-pileup.py"
-  source = "../../jobs/aws/sequila-pileup.py"
-  bucket = aws_s3_bucket.bucket.bucket
-  acl    = "public-read"
-  etag   = filemd5("../../jobs/aws/sequila-pileup.py")
+  key     = "jobs/pysequila/sequila-pileup.py"
+  content = local.py_file
+  bucket  = aws_s3_bucket.bucket.bucket
+  acl     = "public-read"
 }

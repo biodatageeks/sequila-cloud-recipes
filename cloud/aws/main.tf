@@ -6,13 +6,11 @@ module "aws-job-code" {
   pysequila_image_eks = var.pysequila_image_eks
 }
 
-resource "aws_ecr_repository" "ecr" {
-  count                = (var.aws-emr-deploy || var.aws-eks-deploy) ? 1 : 0
-  name                 = "ecr"
-  image_tag_mutability = "MUTABLE"
-  image_scanning_configuration {
-    scan_on_push = false
-  }
+resource "aws_emrserverless_application" "emr-serverless" {
+  count         = var.aws-emr-deploy ? 1 : 0
+  name          = "sequila"
+  release_label = "emr-6.6.0"
+  type          = "spark"
 }
 
 
@@ -62,28 +60,23 @@ module "eks" {
 }
 
 data "aws_eks_cluster_auth" "eks" {
-  name = module.eks[0].cluster_id
+  count = var.aws-eks-deploy ? 1 : 0
+  name  = module.eks[0].cluster_id
 }
 
 data "aws_eks_cluster" "eks" {
-  name = module.eks[0].cluster_id
+  count = var.aws-eks-deploy ? 1 : 0
+  name  = module.eks[0].cluster_id
 }
 
 provider "helm" {
   alias = "eks"
   kubernetes {
-    host                   = try(data.aws_eks_cluster.eks.endpoint, "")
-    token                  = data.aws_eks_cluster_auth.eks.token
-    cluster_ca_certificate = try(base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data), "")
+    host                   = try(data.aws_eks_cluster.eks[0].endpoint, "")
+    token                  = try(data.aws_eks_cluster_auth.eks[0].token, "")
+    cluster_ca_certificate = try(base64decode(data.aws_eks_cluster.eks[0].certificate_authority[0].data), "")
   }
 }
-
-#provider "kubernetes" {
-#  alias                  = "gke"
-#  host                   = try("https://${module.gke[0].endpoint}", "")
-#  token                  = data.google_client_config.default.access_token
-#  cluster_ca_certificate = try(module.gke[0].cluster_ca_certificate, "")
-#}
 
 module "spark-on-k8s-operator-eks" {
   depends_on = [module.eks]

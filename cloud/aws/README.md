@@ -27,7 +27,7 @@
 
 | Name | Type |
 |------|------|
-| [aws_ecr_repository.ecr](https://registry.terraform.io/providers/hashicorp/aws/4.38.0/docs/resources/ecr_repository) | resource |
+| [aws_emrserverless_application.emr-serverless](https://registry.terraform.io/providers/hashicorp/aws/4.38.0/docs/resources/emrserverless_application) | resource |
 | [aws_eks_cluster.eks](https://registry.terraform.io/providers/hashicorp/aws/4.38.0/docs/data-sources/eks_cluster) | data source |
 | [aws_eks_cluster_auth.eks](https://registry.terraform.io/providers/hashicorp/aws/4.38.0/docs/data-sources/eks_cluster_auth) | data source |
 
