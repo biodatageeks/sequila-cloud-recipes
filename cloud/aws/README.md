@@ -19,6 +19,8 @@
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_aws-job-code"></a> [aws-job-code](#module\_aws-job-code) | ../../modules/aws/jobs-code | n/a |
+| <a name="module_eks"></a> [eks](#module\_eks) | terraform-aws-modules/eks/aws | v18.30.2 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | v3.18.1 |
 
 ## Resources
 
@@ -30,6 +32,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_aws-eks-deploy"></a> [aws-eks-deploy](#input\_aws-eks-deploy) | Deploy EKS service | `bool` | `false` | no |
 | <a name="input_aws-emr-deploy"></a> [aws-emr-deploy](#input\_aws-emr-deploy) | Deploy EMR service | `bool` | `false` | no |
 | <a name="input_data_files"></a> [data\_files](#input\_data\_files) | Data files to copy to staging bucket | `list(string)` | n/a | yes |
 | <a name="input_pysequila_image_eks"></a> [pysequila\_image\_eks](#input\_pysequila\_image\_eks) | EKS PySeQuiLa image | `string` | n/a | yes |

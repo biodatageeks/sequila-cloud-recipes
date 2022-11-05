@@ -26,3 +26,9 @@ variable "aws-emr-deploy" {
   default     = false
   description = "Deploy EMR service"
 }
+
+variable "aws-eks-deploy" {
+  type        = bool
+  default     = false
+  description = "Deploy EKS service"
+}
