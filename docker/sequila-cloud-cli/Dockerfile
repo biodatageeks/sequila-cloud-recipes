@@ -18,7 +18,7 @@ ENV TZ=Europe/Warsaw
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     apt -y update && \
     apt -y upgrade && \
-    apt install -y curl gnupg lsb-release software-properties-common apt-transport-https ca-certificates git pwgen
+    apt install -y curl gnupg lsb-release software-properties-common apt-transport-https ca-certificates git pwgen unzip zip
 
 RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
     apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" && \
@@ -55,6 +55,11 @@ ENV PATH=$PATH:/opt/tools
 RUN wget https://golang.org/dl/go1.16.2.linux-amd64.tar.gz && \
     rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.2.linux-amd64.tar.gz
 
+RUN cd /tmp && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install
+
 ENV PATH=$PATH:/usr/local/go/bin
 WORKDIR /home/git
 RUN git clone https://github.com/GoogleCloudPlatform/spark-on-k8s-operator.git && \
@@ -72,8 +77,7 @@ WORKDIR $HOME_DIR
 
 SHELL ["/bin/bash", "-c"]
 
-RUN apt install unzip zip && \
-    curl -s https://get.sdkman.io | bash
+RUN curl -s https://get.sdkman.io | bash
 RUN chmod a+x "$HOME/.sdkman/bin/sdkman-init.sh"
 RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install java ${JAVA_VERSION}
 RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install scala ${SCALA_VERSION}
