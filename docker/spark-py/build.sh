@@ -8,7 +8,7 @@ export EXTRA_MVN_REPO="https://zsibio.ii.pw.edu.pl/nexus/repository/maven-snapsh
 export BASE_IMAGE=apache/spark-py:v${SPARK_VERSION}
 git_sha=$(git rev-parse --short HEAD)
 
-for tag in base gke dataproc aks
+for tag in base gke dataproc aks eks
 do
   if [ $tag == "dataproc" ]; then
     export BASE_IMAGE=biodatageeks/spark-py:pysequila-${PYSEQUILA_VERSION_SEM}-"gke"-$git_sha

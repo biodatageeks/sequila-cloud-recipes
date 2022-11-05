@@ -20,11 +20,13 @@ resource "aws_s3_bucket" "bucket" {
 
 }
 
-resource "aws_s3_bucket_object" "sequila-data" {
+resource "aws_s3_object" "sequila-data" {
   for_each = toset(var.data_files)
   bucket   = aws_s3_bucket.bucket.bucket
   key      = "data/${each.value}"
   source   = "../../data/${each.value}"
+  acl      = "public-read"
+  etag     = filemd5("../../data/${each.value}")
 }
 
 locals {
@@ -38,7 +40,7 @@ locals {
 
   sequila.sql("SET spark.biodatageeks.readAligment.method=disq")
   sequila\
-    .pileup(f"gs://${aws_s3_bucket.bucket.bucket}/data/NA12878.multichrom.md.bam",
+    .pileup(f"s3a://${aws_s3_bucket.bucket.bucket}/data/NA12878.multichrom.md.bam",
             f"Homo_sapiens_assembly18_chr1_chrM.small.fasta", False) \
     .show(5)
   EOT
@@ -74,13 +76,15 @@ locals {
     mode: cluster
     image: "${var.pysequila_image_eks}"
     imagePullPolicy: Always
-    mainApplicationFile: gs://${aws_s3_bucket.bucket.bucket}/jobs/pysequila/sequila-pileup.py
+    mainApplicationFile: s3a://${aws_s3_bucket.bucket.bucket}/jobs/pysequila/sequila-pileup.py
     sparkVersion: "3.2.2"
     deps:
       files:
-        - gs://${aws_s3_bucket.bucket.bucket}/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta
-        - gs://${aws_s3_bucket.bucket.bucket}/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta.fai
+        - s3a://${aws_s3_bucket.bucket.bucket}/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta
+        - s3a://${aws_s3_bucket.bucket.bucket}/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta.fai
       filesDownloadDir: "/opt/spark/work-dir"
+    hadoopConf:
+      fs.s3a.aws.credentials.provider: org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider
     sparkConf:
       spark.kubernetes.executor.deleteOnTermination: "false"
       spark.executor.extraClassPath: "/opt/spark/.ivy2/jars/*"
@@ -121,12 +125,14 @@ resource "local_file" "py_file" {
 
 resource "local_file" "deployment_file" {
   content  = local.spark_k8s_deployment
-  filename = "../../jobs/aws/gke/pysequila.yaml"
+  filename = "../../jobs/aws/eks/pysequila.yaml"
 }
 
-resource "aws_s3_bucket_object" "sequila-pileup" {
+resource "aws_s3_object" "sequila-pileup" {
 
   key    = "jobs/pysequila/sequila-pileup.py"
   source = "../../jobs/aws/sequila-pileup.py"
   bucket = aws_s3_bucket.bucket.bucket
+  acl    = "public-read"
+  etag   = filemd5("../../jobs/aws/sequila-pileup.py")
 }

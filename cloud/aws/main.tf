@@ -52,11 +52,45 @@ module "eks" {
   eks_managed_node_groups = {
     green = {
       min_size     = 1
-      max_size     = 2
+      max_size     = var.eks_max_node_count
       desired_size = 1
 
-      instance_types = ["t3.large"]
-      capacity_type  = "SPOT"
+      instance_types = [var.eks_machine_type]
+      capacity_type  = var.eks_preemptible ? "SPOT" : "ON_DEMAND"
     }
+  }
+}
+
+data "aws_eks_cluster_auth" "eks" {
+  name = module.eks[0].cluster_id
+}
+
+data "aws_eks_cluster" "eks" {
+  name = module.eks[0].cluster_id
+}
+
+provider "helm" {
+  alias = "eks"
+  kubernetes {
+    host                   = try(data.aws_eks_cluster.eks.endpoint, "")
+    token                  = data.aws_eks_cluster_auth.eks.token
+    cluster_ca_certificate = try(base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data), "")
+  }
+}
+
+#provider "kubernetes" {
+#  alias                  = "gke"
+#  host                   = try("https://${module.gke[0].endpoint}", "")
+#  token                  = data.google_client_config.default.access_token
+#  cluster_ca_certificate = try(module.gke[0].cluster_ca_certificate, "")
+#}
+
+module "spark-on-k8s-operator-eks" {
+  depends_on = [module.eks]
+  source     = "../../modules/kubernetes/spark-on-k8s-operator"
+  image_tag  = "v1beta2-1.2.3-3.1.2-eks"
+  count      = var.aws-eks-deploy ? 1 : 0
+  providers = {
+    helm = helm.eks
   }
 }

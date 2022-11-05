@@ -12,6 +12,7 @@ Table of Contents
 
 * [Disclaimer](#disclaimer)
 * [Demo scenario](#demo-scenario)
+* [Support matrix](#support-matrix)
 * [Modules statuses](#modules-statuses)
     * [GCP](#gcp)
     * [Azure](#azure)
@@ -24,6 +25,10 @@ Table of Contents
     * [Login](#login-2)
     * [General GCP setup](#general-gcp-setup)
     * [Dataproc](#dataproc)
+        * [Deploy](#deploy)
+        * [Run](#run)
+        * [Cleanup](#cleanup)
+    * [Dataproc Serverless](#dataproc-serverless)
         * [Deploy](#deploy)
         * [Run](#run)
         * [Cleanup](#cleanup)
@@ -61,21 +66,22 @@ or using managed Kubernetes service (Azure - AKS, AWS - EKS and GCP - GKE).
 
 | Cloud | Service   |Release        | Spark  | SeQuiLa |PySeQuila| Image tag*  |
 |-------|-----------|---------------|--------|---------|---------|--------------|
-| GCP   | GKE       |1.23.8-gke.1900              | 3.2.2  | 1.1.0   | 0.4.1   | docker.io/biodatageeks/spark-py:pysequila-0.4.1-gke-3398602|
+| GCP   | GKE       |1.23.8-gke.1900              | 3.2.2  | 1.1.0   | 0.4.1   | docker.io/biodatageeks/spark-py:pysequila-0.4.1-gke-latest|
 | GCP   | Dataproc  |2.0.27-ubuntu18| 3.1.3  | 1.0.0   | 0.3.3   |   -|
-| GCP   | Dataproc Serverless|1.0.21| 3.2.2  | 1.1.0   | 0.4.1   | gcr.io/${TF_VAR_project_name}/spark-py:pysequila-0.3.4-dataproc-3398602  |
-| Azure | AKS       |1.23.12|3.2.2|1.1.0|0.4.1| docker.io/biodatageeks/spark-py:pysequila-0.4.1-aks-3398602|
-| AWS   | EKS|xxx | 3.2.2 | 1.1.0 | 0.4.1 | |
+| GCP   | Dataproc Serverless|1.0.21| 3.2.2  | 1.1.0   | 0.4.1   | gcr.io/${TF_VAR_project_name}/spark-py:pysequila-0.3.4-dataproc-latest  |
+| Azure | AKS       |1.23.12|3.2.2|1.1.0|0.4.1| docker.io/biodatageeks/spark-py:pysequila-0.4.1-aks-latest|
+| AWS   | EKS|1.23.9 | 3.2.2 | 1.1.0 | 0.4.1 | docker.io/biodatageeks/spark-py:pysequila-0.4.1-aks-latest|
 | AWS   | EMR Serverless|xxx | 3.2.2 | 1.1.0 | 0.4.1 | |
 | AWS   | EMR |emr-6.6.0 | 3.2.2 | 1.1.0 | 0.4.1 | |
+
 Based on the above table set software versions and Docker images accordingly, e.g.: 
 ```bash
 export TF_VAR_pysequila_version=0.4.1
 export TF_VAR_sequila_version=1.1.0
-export TF_VAR_pysequila_image_gke=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-gke-3398602
-export TF_VAR_pysequila_image_dataproc=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-dataproc-3398602
-export TF_VAR_pysequila_image_aks=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-aks-3398602
-export TF_VAR_pysequila_image_eks=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-eks-3398602
+export TF_VAR_pysequila_image_gke=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-gke-latest
+export TF_VAR_pysequila_image_dataproc=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-dataproc-latest
+export TF_VAR_pysequila_image_aks=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-aks-latest
+export TF_VAR_pysequila_image_eks=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-eks-latest
 
 ```   
 # Using SeQuiLa cli Docker image for GCP
@@ -90,7 +96,7 @@ docker run --rm -it \
     -e TF_VAR_pysequila_version=${TF_VAR_pysequila_version} \
     -e TF_VAR_sequila_version=${TF_VAR_sequila_version} \
     -e TF_VAR_pysequila_image_gke=${TF_VAR_pysequila_image_gke} \
-biodatageeks/sequila-cloud-cli:7c1ebf6
+biodatageeks/sequila-cloud-cli:latest
 
 cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && \
 cd sequila-cloud-recipes && \
@@ -101,11 +107,29 @@ terraform init
 
 # Using SeQuiLa cli Docker image for Azure
 ```bash
-docker run --rm -it biodatageeks/sequila-cloud-cli:a6c3eb0
+docker run --rm -it \
+    -e TF_VAR_pysequila_version=${TF_VAR_pysequila_version} \
+    -e TF_VAR_sequila_version=${TF_VAR_sequila_version} \
+    -e TF_VAR_pysequila_image_aks=${TF_VAR_pysequila_image_aks} \
+    biodatageeks/sequila-cloud-cli:latest 
 
 cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && \
 cd sequila-cloud-recipes && \
 cd cloud/azure
+terraform init
+```
+
+# Using SeQuiLa cli Docker image for AWS
+```bash
+docker run --rm -it \
+    -e TF_VAR_pysequila_version=${TF_VAR_pysequila_version} \
+    -e TF_VAR_sequila_version=${TF_VAR_sequila_version} \
+    -e TF_VAR_pysequila_image_eks=${TF_VAR_pysequila_image_eks} \
+    biodatageeks/sequila-cloud-cli:latest
+
+cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && \
+cd sequila-cloud-recipes && \
+cd cloud/aws
 terraform init
 ```
 
@@ -114,16 +138,15 @@ terraform init
 ## GCP
 
 * [Dataproc](#Dataproc) :white_check_mark: 
-* [Dataproc serverless](#Dataprocserverless) :white_check_mark:
+* [Dataproc serverless](#dataproc-serverless) :white_check_mark:
 * [GKE (Google Kubernetes Engine)](#GKE) :white_check_mark:
 
 ## Azure
 * [AKS (Azure Kubernetes Service)](#AKS): :white_check_mark:
 
 ## AWS
-* EMR: :soon:
 * EMR Serverless: :soon:
-* EKS(Elastic Kubernetes Service): :soon:
+* [EKS(Elastic Kubernetes Service)](#EKS): :white_check_mark:
 
 # AWS
 
@@ -136,6 +159,44 @@ export AWS_ACCESS_KEY_ID="anaccesskey"
 export AWS_SECRET_ACCESS_KEY="asecretkey"
 export AWS_REGION="eu-west-1"
 ```
+
+## EKS
+### Deploy
+1. Ensure you are in the right subfolder
+```bash
+echo $PWD | rev | cut -f1,2 -d'/' | rev
+cloud/aws
+```
+2. Run
+```bash
+terraform apply -var-file=../../env/aws.tfvars -var-file=../../env/_all.tfvars -var-file=../../env/aws-eks.tfvars
+```
+
+### Run
+1. Connect to the K8S cluster, e.g.:
+```bash
+aws eks update-kubeconfig --region eu-west-1 --name sequila
+kubectl get nodes
+NAME                                       STATUS   ROLES    AGE   VERSION
+ip-10-0-1-241.eu-west-1.compute.internal   Ready    <none>   36m   v1.23.9-eks-ba74326
+```
+2. Install [sparkctl](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/sparkctl) (recommended) or use `kubectl`: \
+   and
+```bash
+sparkctl create ../../jobs/aws/eks/pysequila.yaml
+```
+After a while you will be able to check the logs:
+```bash
+sparkctl log -f pysequila
+```
+![img.png](doc/images/eks-job.png)
+
+### Cleanup
+```bash
+sparkctl delete pysequila
+terraform destroy -var-file=../../env/aws.tfvars -var-file=../../env/_all.tfvars -var-file=../../env/aws-eks.tfvars
+```
+
 # Azure
 ## Login
 Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) and set default subscription
@@ -166,11 +227,7 @@ NAME                              STATUS   ROLES   AGE   VERSION
 aks-default-37875945-vmss000002   Ready    agent   59m   v1.20.9
 aks-default-37875945-vmss000003   Ready    agent   59m   v1.20.9
 ```
-2. Install [sparkctl](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/sparkctl) (recommended) or use `kubectl`: \
-   :bulb: Please replace references to staging bucket with your storageAccount, e.g.
-```yaml
-mainApplicationFile: wasb://sequila@sequilauxlw3g9fznm.blob.core.windows.net/jobs/pysequila/sequila-pileup-aks.py
-```
+2. Use `sparkctl` or `kubectl`: \
 and
 ```bash
 sparkctl create ../../jobs/azure/aks/pysequila.yaml
@@ -243,7 +300,7 @@ or from GCP UI Console:
 terraform destroy -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
 ```
 
-## Dataprocserverless
+## Dataproc serverless
 
 ### Deploy
 1. Prepare infrastructure including a Container registry (see point 2)
@@ -313,7 +370,7 @@ name: projects/bigdata-datascience/regions/europe-west2/operations/a746a63b-61ed
 2. Destroy infrastructure
 
 ```bash
-terraform apply -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
+terraform destroy -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-dataproc.tfvars -var-file=../../env/_all.tfvars
 ```
 
 ## GKE

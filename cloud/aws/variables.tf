@@ -32,3 +32,21 @@ variable "aws-eks-deploy" {
   default     = false
   description = "Deploy EKS service"
 }
+
+variable "eks_max_node_count" {
+  type        = number
+  default     = 2
+  description = "Maximum number of kubernetes nodes"
+}
+
+variable "eks_machine_type" {
+  type        = string
+  default     = "t3.xlarge"
+  description = "Machine size"
+}
+
+variable "eks_preemptible" {
+  type        = bool
+  default     = true
+  description = "Enable preemtible(spot) instance in a Kubernetes pool"
+}
