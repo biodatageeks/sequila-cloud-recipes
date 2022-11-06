@@ -15,6 +15,7 @@ locals {
   sequila = SequilaSession.builder \
     .appName("SeQuiLa") \
     .getOrCreate()
+  sequila.sparkContext.setLogLevel("INFO")
   sequila.sql("SET spark.biodatageeks.readAligment.method=disq")
   sequila\
     .pileup(f"s3a://${var.bucket}/data/NA12878.multichrom.md.bam",

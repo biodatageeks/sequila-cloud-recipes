@@ -18,7 +18,7 @@ ENV TZ=Europe/Warsaw
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     apt -y update && \
     apt -y upgrade && \
-    apt install -y curl gnupg lsb-release software-properties-common apt-transport-https ca-certificates git pwgen unzip zip
+    apt install -y curl gnupg lsb-release software-properties-common apt-transport-https ca-certificates git pwgen unzip zip docker.io
 
 RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
     apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" && \

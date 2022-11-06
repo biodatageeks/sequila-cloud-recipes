@@ -27,6 +27,11 @@ variable "aws-emr-deploy" {
   description = "Deploy EMR service"
 }
 
+variable "aws-emr-release" {
+  type        = string
+  description = "EMR Serverless release (needs to be >=6.6.0)"
+}
+
 variable "aws-eks-deploy" {
   type        = bool
   default     = false

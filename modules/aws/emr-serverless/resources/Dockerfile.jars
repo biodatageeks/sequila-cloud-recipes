@@ -1,0 +1,6 @@
+ARG BASE_IMAGE
+FROM $BASE_IMAGE as base
+
+FROM scratch AS export
+ARG IVY_DIR_JARS=/opt/spark/.ivy2/jars
+COPY --from=base $IVY_DIR_JARS/*.jar /

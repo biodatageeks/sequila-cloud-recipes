@@ -12,16 +12,11 @@ module "aws-job-code" {
   pysequila_image_eks = var.pysequila_image_eks
 }
 
-resource "aws_emrserverless_application" "emr-serverless" {
-  count         = var.aws-emr-deploy ? 1 : 0
-  name          = "sequila"
-  release_label = "emr-6.6.0"
-  type          = "spark"
-}
+
 
 
 module "vpc" {
-  count   = var.aws-eks-deploy ? 1 : 0
+  count   = (var.aws-eks-deploy || var.aws-emr-deploy) ? 1 : 0
   source  = "terraform-aws-modules/vpc/aws"
   version = "v3.18.1"
 
@@ -40,6 +35,19 @@ module "vpc" {
     Environment = "dev"
   }
 }
+
+module "emr-job" {
+  source             = "../../modules/aws/emr-serverless"
+  aws-emr-release    = var.aws-emr-release
+  bucket             = module.storage.bucket
+  pysequila_version  = var.pysequila_version
+  sequila_version    = var.sequila_version
+  data_files         = [for f in var.data_files : "s3://${module.storage.bucket}/data/${f}" if length(regexall("fasta", f)) > 0]
+  subnet_ids         = module.vpc[0].private_subnets
+  vpc_id             = module.vpc[0].vpc_id
+  security_group_ids = [module.vpc[0].default_security_group_id]
+}
+
 
 module "eks" {
   count                           = var.aws-eks-deploy ? 1 : 0
