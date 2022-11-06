@@ -1,28 +1,6 @@
-data "aws_caller_identity" "current" {}
-
-resource "random_string" "storage_id" {
-  keepers = {
-    sub_id = data.aws_caller_identity.current.account_id
-  }
-  length  = 8
-  special = false
-  lower   = true
-}
-
-#tfsec:ignore:aws-s3-enable-bucket-encryption
-#tfsec:ignore:aws-s3-enable-bucket-logging
-#tfsec:ignore:aws-s3-enable-versioning
-#tfsec:ignore:aws-s3-no-public-access-with-acl
-#tfsec:ignore:aws-s3-specify-public-access-block
-resource "aws_s3_bucket" "bucket" {
-  bucket = "sequila${lower(random_string.storage_id.id)}"
-  acl    = "public-read"
-
-}
-
 resource "aws_s3_object" "sequila-data" {
   for_each = toset(var.data_files)
-  bucket   = aws_s3_bucket.bucket.bucket
+  bucket   = var.bucket
   key      = "data/${each.value}"
   source   = "../../data/${each.value}"
   acl      = "public-read"
@@ -39,7 +17,7 @@ locals {
     .getOrCreate()
   sequila.sql("SET spark.biodatageeks.readAligment.method=disq")
   sequila\
-    .pileup(f"s3a://${aws_s3_bucket.bucket.bucket}/data/NA12878.multichrom.md.bam",
+    .pileup(f"s3a://${var.bucket}/data/NA12878.multichrom.md.bam",
             f"Homo_sapiens_assembly18_chr1_chrM.small.fasta", False) \
     .show(5)
   EOT
@@ -75,12 +53,12 @@ locals {
     mode: cluster
     image: "${var.pysequila_image_eks}"
     imagePullPolicy: Always
-    mainApplicationFile: s3a://${aws_s3_bucket.bucket.bucket}/jobs/pysequila/sequila-pileup.py
+    mainApplicationFile: s3a://${var.bucket}/jobs/pysequila/sequila-pileup.py
     sparkVersion: "3.2.2"
     deps:
       files:
-        - s3a://${aws_s3_bucket.bucket.bucket}/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta
-        - s3a://${aws_s3_bucket.bucket.bucket}/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta.fai
+        - s3a://${var.bucket}/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta
+        - s3a://${var.bucket}/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta.fai
       filesDownloadDir: "/opt/spark/work-dir"
     hadoopConf:
       fs.s3a.aws.credentials.provider: org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider
@@ -125,6 +103,6 @@ resource "local_file" "deployment_file" {
 resource "aws_s3_object" "sequila-pileup" {
   key     = "jobs/pysequila/sequila-pileup.py"
   content = local.py_file
-  bucket  = aws_s3_bucket.bucket.bucket
+  bucket  = var.bucket
   acl     = "public-read"
 }

@@ -1,3 +1,7 @@
+variable "bucket" {
+  type        = string
+  description = "Bucket name for code, dependencies, etc."
+}
 variable "data_files" {
   type        = list(string)
   description = "Data files to copy to staging bucket"

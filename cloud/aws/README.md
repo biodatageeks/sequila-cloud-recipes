@@ -21,6 +21,7 @@
 | <a name="module_aws-job-code"></a> [aws-job-code](#module\_aws-job-code) | ../../modules/aws/jobs-code | n/a |
 | <a name="module_eks"></a> [eks](#module\_eks) | terraform-aws-modules/eks/aws | v18.30.2 |
 | <a name="module_spark-on-k8s-operator-eks"></a> [spark-on-k8s-operator-eks](#module\_spark-on-k8s-operator-eks) | ../../modules/kubernetes/spark-on-k8s-operator | n/a |
+| <a name="module_storage"></a> [storage](#module\_storage) | ../../modules/aws/storage | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | v3.18.1 |
 
 ## Resources

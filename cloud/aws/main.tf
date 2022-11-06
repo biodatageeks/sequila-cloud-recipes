@@ -1,4 +1,10 @@
+module "storage" {
+  source = "../../modules/aws/storage"
+}
+
+
 module "aws-job-code" {
+  bucket              = module.storage.bucket
   source              = "../../modules/aws/jobs-code"
   data_files          = var.data_files
   pysequila_version   = var.pysequila_version
