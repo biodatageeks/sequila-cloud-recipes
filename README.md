@@ -21,6 +21,7 @@ Table of Contents
 * [AWS](#aws)
     * [Login](#login)
     * [EKS](#eks)
+    * [EMR Serverless](#emr-serverless)
 * [Azure](#azure-1)
     * [Login](#login)
     * [AKS](#aks)
@@ -64,8 +65,8 @@ as well. Check code comments for details.
 | GCP   | Dataproc  |2.0.27-ubuntu18| 3.1.3  | 1.0.0   | 0.3.3   |   -|
 | GCP   | Dataproc Serverless|1.0.21| 3.2.2  | 1.1.0   | 0.4.1   | gcr.io/${TF_VAR_project_name}/spark-py:pysequila-0.3.4-dataproc-latest  |
 | Azure | AKS       |1.23.12|3.2.2|1.1.0|0.4.1| docker.io/biodatageeks/spark-py:pysequila-0.4.1-aks-latest|
-| AWS   | EKS|1.23.9 | 3.2.2 | 1.1.0 | 0.4.1 | docker.io/biodatageeks/spark-py:pysequila-0.4.1-aks-latest|
-| AWS   | EMR Serverless|xxx | 3.2.2 | 1.1.0 | 0.4.1 | |
+| AWS   | EKS|1.23.9 | 3.2.2 | 1.1.0 | 0.4.1 | docker.io/biodatageeks/spark-py:pysequila-0.4.1-eks-latest|
+| AWS   | EMR Serverless|emr-6.7.0 | 3.2.1 | 1.1.0 | 0.4.1 |- |
 
 Based on the above table set software versions and Docker images accordingly, e.g.:
 ```bash
@@ -83,6 +84,7 @@ export TF_VAR_project_name=tbd-tbd-devel
 export TF_VAR_region=europe-west2
 export TF_VAR_zone=europe-west2-b
 docker run --rm -it \
+    -v /var/run/docker.sock:/var/run/docker.sock \
     -e TF_VAR_project_name=${TF_VAR_project_name} \
     -e TF_VAR_region=${TF_VAR_region} \
     -e TF_VAR_zone=${TF_VAR_zone} \
@@ -138,7 +140,7 @@ terraform init
 * [AKS (Azure Kubernetes Service)](#AKS): :white_check_mark:
 
 ## AWS
-* EMR Serverless: :soon:
+* [EMR Serverless](#emr-serverless): :white_check_mark:
 * [EKS(Elastic Kubernetes Service)](#EKS): :white_check_mark:
 
 # AWS
@@ -187,6 +189,54 @@ sparkctl log -f pysequila
 ```bash
 sparkctl delete pysequila
 terraform destroy -var-file=../../env/aws.tfvars -var-file=../../env/_all.tfvars -var-file=../../env/aws-eks.tfvars
+```
+
+## EMR Serverless
+### Deploy
+Unlike GCP Dataproc Serverless that support providing custom docker images for Spark driver and executors, AWS EMR Serverless
+requires preparing both: a tarball of a Python virtual environment (using `venv-pack` or `conda-pack`) and copying extra jar files
+to a s3 bucket. Both steps are automated by [emr-serverless](modules/aws/emr-serverless/README.md) module.
+More info can be found [here](https://github.com/aws-samples/emr-serverless-samples/blob/main/examples/pyspark/dependencies/README.md)
+Starting from EMR release `6.7.0` it is possible to specify extra jars using `--packages` option but requires an additional VPN NAT setup.
+
+```bash
+terraform apply -var-file=../../env/aws.tfvars -var-file=../../env/_all.tfvars -var-file=../../env/aws-emr.tfvars
+```
+
+### Run
+As an output of the above command you will find a rendered command that you can use to launch a sample job (including environment variables export):
+```bash
+Apply complete! Resources: 178 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+emr_server_exec_role_arn = "arn:aws:iam::927478350239:role/sequila-role"
+emr_serverless_command = <<EOT
+
+export APPLICATION_ID=00f5c6prgt01190p
+export JOB_ROLE_ARN=arn:aws:iam::927478350239:role/sequila-role
+
+aws emr-serverless start-job-run \
+  --application-id $APPLICATION_ID \
+  --execution-role-arn $JOB_ROLE_ARN \
+  --job-driver '{
+      "sparkSubmit": {
+          "entryPoint": "s3://sequilabhp8knyc/jobs/pysequila/sequila-pileup.py",
+          "entryPointArguments": ["pyspark_pysequila-0.4.1.tar.gz"],
+          "sparkSubmitParameters": "--conf spark.driver.cores=1 --conf spark.driver.memory=2g --conf spark.executor.cores=1 --conf spark.executor.memory=4g --conf spark.executor.instances=1 --archives=s3://sequilabhp8knyc/venv/pysequila/pyspark_pysequila-0.4.1.tar.gz#environment --jars s3://sequilabhp8knyc/jars/sequila/1.1.0/* --conf spark.emr-serverless.driverEnv.PYSPARK_DRIVER_PYTHON=./environment/bin/python --conf spark.emr-serverless.driverEnv.PYSPARK_PYTHON=./environment/bin/python --conf spark.emr-serverless.executorEnv.PYSPARK_PYTHON=./environment/bin/python --conf spark.files=s3://sequilabhp8knyc/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta,s3://sequilabhp8knyc/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta.fai"
+      }
+  }'
+
+EOT
+
+```
+![](doc/images/emr-serverless-job-1.png)
+![](doc/images/emr-serverless-job-2.png)
+
+### Cleanup
+```bash
+terraform destroy -var-file=../../env/aws.tfvars -var-file=../../env/_all.tfvars -var-file=../../env/aws-emr.tfvars
+
 ```
 
 # Azure

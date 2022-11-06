@@ -20,14 +20,15 @@
 |------|--------|---------|
 | <a name="module_aws-job-code"></a> [aws-job-code](#module\_aws-job-code) | ../../modules/aws/jobs-code | n/a |
 | <a name="module_eks"></a> [eks](#module\_eks) | terraform-aws-modules/eks/aws | v18.30.2 |
+| <a name="module_emr-job"></a> [emr-job](#module\_emr-job) | ../../modules/aws/emr-serverless | n/a |
 | <a name="module_spark-on-k8s-operator-eks"></a> [spark-on-k8s-operator-eks](#module\_spark-on-k8s-operator-eks) | ../../modules/kubernetes/spark-on-k8s-operator | n/a |
+| <a name="module_storage"></a> [storage](#module\_storage) | ../../modules/aws/storage | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | v3.18.1 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [aws_ecr_repository.ecr](https://registry.terraform.io/providers/hashicorp/aws/4.38.0/docs/resources/ecr_repository) | resource |
 | [aws_eks_cluster.eks](https://registry.terraform.io/providers/hashicorp/aws/4.38.0/docs/data-sources/eks_cluster) | data source |
 | [aws_eks_cluster_auth.eks](https://registry.terraform.io/providers/hashicorp/aws/4.38.0/docs/data-sources/eks_cluster_auth) | data source |
 
@@ -37,6 +38,7 @@
 |------|-------------|------|---------|:--------:|
 | <a name="input_aws-eks-deploy"></a> [aws-eks-deploy](#input\_aws-eks-deploy) | Deploy EKS service | `bool` | `false` | no |
 | <a name="input_aws-emr-deploy"></a> [aws-emr-deploy](#input\_aws-emr-deploy) | Deploy EMR service | `bool` | `false` | no |
+| <a name="input_aws-emr-release"></a> [aws-emr-release](#input\_aws-emr-release) | EMR Serverless release (needs to be >=6.6.0) | `string` | n/a | yes |
 | <a name="input_data_files"></a> [data\_files](#input\_data\_files) | Data files to copy to staging bucket | `list(string)` | n/a | yes |
 | <a name="input_eks_machine_type"></a> [eks\_machine\_type](#input\_eks\_machine\_type) | Machine size | `string` | `"t3.xlarge"` | no |
 | <a name="input_eks_max_node_count"></a> [eks\_max\_node\_count](#input\_eks\_max\_node\_count) | Maximum number of kubernetes nodes | `number` | `2` | no |
@@ -48,5 +50,8 @@
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_emr_server_exec_role_arn"></a> [emr\_server\_exec\_role\_arn](#output\_emr\_server\_exec\_role\_arn) | ARN of EMR Serverless execution role |
+| <a name="output_emr_serverless_command"></a> [emr\_serverless\_command](#output\_emr\_serverless\_command) | EMR Serverless command to run a sample SeQuiLa job |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
