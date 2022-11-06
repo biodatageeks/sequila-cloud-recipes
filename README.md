@@ -63,7 +63,7 @@ as well. Check code comments for details.
 |-------|-----------|---------------|--------|---------|---------|--------------|
 | GCP   | GKE       |1.23.8-gke.1900              | 3.2.2  | 1.1.0   | 0.4.1   | docker.io/biodatageeks/spark-py:pysequila-0.4.1-gke-latest|
 | GCP   | Dataproc  |2.0.27-ubuntu18| 3.1.3  | 1.0.0   | 0.3.3   |   -|
-| GCP   | Dataproc Serverless|1.0.21| 3.2.2  | 1.1.0   | 0.4.1   | gcr.io/${TF_VAR_project_name}/spark-py:pysequila-0.3.4-dataproc-latest  |
+| GCP   | Dataproc Serverless|1.0.21| 3.2.2  | 1.1.0   | 0.4.1   | gcr.io/${TF_VAR_project_name}/spark-py:pysequila-0.4.1-dataproc-latest  |
 | Azure | AKS       |1.23.12|3.2.2|1.1.0|0.4.1| docker.io/biodatageeks/spark-py:pysequila-0.4.1-aks-latest|
 | AWS   | EKS|1.23.9 | 3.2.2 | 1.1.0 | 0.4.1 | docker.io/biodatageeks/spark-py:pysequila-0.4.1-eks-latest|
 | AWS   | EMR Serverless|emr-6.7.0 | 3.2.1 | 1.1.0 | 0.4.1 |- |
