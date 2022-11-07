@@ -29,6 +29,7 @@ variable "aws-emr-deploy" {
 
 variable "aws-emr-release" {
   type        = string
+  default     = "emr-6.6.0"
   description = "EMR Serverless release (needs to be >=6.6.0)"
 }
 

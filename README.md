@@ -52,8 +52,10 @@ as well. Check code comments for details.
     3. setup computing environment
     4. run a test PySeQuiLa job using PySpark using YARN or [spark-on-k8s-operator](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator)
     5. We assume that:
+    * on AWS: an account is created
     * on GCP: a project is created and attached to billing account
     * on Azure: a subscription is created (A Google Cloud project is conceptually similar to the Azure subscription, in terms of billing, quotas, and limits).
+
 # Set SeQuiLa and PySeQuiLa versions
 
 ## Support matrix
@@ -69,20 +71,32 @@ as well. Check code comments for details.
 | AWS   | EMR Serverless|emr-6.7.0 | 3.2.1 | 1.1.0 | 0.4.1 |- |
 
 Based on the above table set software versions and Docker images accordingly, e.g.:
+:bulb: These environment variables need to be set prior launching SeQuiLa-cli container.
 ```bash
+### All clouds
 export TF_VAR_pysequila_version=0.4.1
 export TF_VAR_sequila_version=1.1.0
+## GCP only
 export TF_VAR_pysequila_image_gke=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-gke-latest
 export TF_VAR_pysequila_image_dataproc=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-dataproc-latest
+## Azure only
 export TF_VAR_pysequila_image_aks=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-aks-latest
+## AWS only
 export TF_VAR_pysequila_image_eks=docker.io/biodatageeks/spark-py:pysequila-${TF_VAR_pysequila_version}-eks-latest
 
 ```   
-# Using SeQuiLa cli Docker image for GCP
+# Using SeQuiLa cli Docker image
+:bulb: It is strongly recommended to use `biodatageeks/sequila-cloud-cli:latest` image to run all the commands.
+This is image contains all the tools required to set up both infrastructure and run SeQuiLa demo jobs.
+
+## Using SeQuiLa cli Docker image for GCP
 ```bash
+## change to your project and region/zone
 export TF_VAR_project_name=tbd-tbd-devel
 export TF_VAR_region=europe-west2
 export TF_VAR_zone=europe-west2-b
+##
+docker pull biodatageeks/sequila-cloud-cli:latest
 docker run --rm -it \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -e TF_VAR_project_name=${TF_VAR_project_name} \
@@ -92,7 +106,10 @@ docker run --rm -it \
     -e TF_VAR_sequila_version=${TF_VAR_sequila_version} \
     -e TF_VAR_pysequila_image_gke=${TF_VAR_pysequila_image_gke} \
 biodatageeks/sequila-cloud-cli:latest
+```
+:bulb: The rest of the commands in this demo should be executed in the container.
 
+```bash
 cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && \
 cd sequila-cloud-recipes && \
 cd cloud/gcp
@@ -100,28 +117,35 @@ terraform init
 ```
 
 
-# Using SeQuiLa cli Docker image for Azure
+## Using SeQuiLa cli Docker image for Azure
 ```bash
+docker pull biodatageeks/sequila-cloud-cli:latest
 docker run --rm -it \
     -e TF_VAR_pysequila_version=${TF_VAR_pysequila_version} \
     -e TF_VAR_sequila_version=${TF_VAR_sequila_version} \
     -e TF_VAR_pysequila_image_aks=${TF_VAR_pysequila_image_aks} \
     biodatageeks/sequila-cloud-cli:latest 
+```
+:bulb: The rest of the commands in this demo should be executed in the container.
 
+```bash
 cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && \
 cd sequila-cloud-recipes && \
 cd cloud/azure
 terraform init
 ```
 
-# Using SeQuiLa cli Docker image for AWS
+## Using SeQuiLa cli Docker image for AWS
 ```bash
+docker pull biodatageeks/sequila-cloud-cli:latest
 docker run --rm -it \
     -e TF_VAR_pysequila_version=${TF_VAR_pysequila_version} \
     -e TF_VAR_sequila_version=${TF_VAR_sequila_version} \
     -e TF_VAR_pysequila_image_eks=${TF_VAR_pysequila_image_eks} \
     biodatageeks/sequila-cloud-cli:latest
-
+```
+:bulb: The rest of the commands in this demo should be executed in the container.
+```bash
 cd git && git clone https://github.com/biodatageeks/sequila-cloud-recipes.git && \
 cd sequila-cloud-recipes && \
 cd cloud/aws
@@ -154,6 +178,8 @@ export AWS_SECRET_ACCESS_KEY="asecretkey"
 export AWS_REGION="eu-west-1"
 ```
 
+:bulb: Above-mentioned User/Service Account should have account admin privileges to manage EKS/EMR and S3 resources.
+
 ## EKS
 ### Deploy
 1. Ensure you are in the right subfolder
@@ -169,13 +195,14 @@ terraform apply -var-file=../../env/aws.tfvars -var-file=../../env/_all.tfvars -
 ### Run
 1. Connect to the K8S cluster, e.g.:
 ```bash
+## Fetch configuration
 aws eks update-kubeconfig --region eu-west-1 --name sequila
+## Verify
 kubectl get nodes
 NAME                                       STATUS   ROLES    AGE   VERSION
 ip-10-0-1-241.eu-west-1.compute.internal   Ready    <none>   36m   v1.23.9-eks-ba74326
 ```
-2. Install [sparkctl](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/sparkctl) (recommended) or use `kubectl`: \
-   and
+2. Use [sparkctl](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/sparkctl) (recommended - available in sequila-cli image) or use `kubectl` to deploy a SeQuiLa job: 
 ```bash
 sparkctl create ../../jobs/aws/eks/pysequila.yaml
 ```
@@ -183,6 +210,8 @@ After a while you will be able to check the logs:
 ```bash
 sparkctl log -f pysequila
 ```
+
+:bulb: Or you can use [k9s](https://k9scli.io/) tool (available in the image) to check Spark Driver std output: 
 ![img.png](doc/images/eks-job.png)
 
 ### Cleanup
@@ -198,6 +227,7 @@ requires preparing both: a tarball of a Python virtual environment (using `venv-
 to a s3 bucket. Both steps are automated by [emr-serverless](modules/aws/emr-serverless/README.md) module.
 More info can be found [here](https://github.com/aws-samples/emr-serverless-samples/blob/main/examples/pyspark/dependencies/README.md)
 Starting from EMR release `6.7.0` it is possible to specify extra jars using `--packages` option but requires an additional VPN NAT setup.
+:bulb: This is why it may take some time (depending on you network bandwidth) to prepare and upload additional dependencies to a s3 bucket - please be patient.
 
 ```bash
 terraform apply -var-file=../../env/aws.tfvars -var-file=../../env/_all.tfvars -var-file=../../env/aws-emr.tfvars
@@ -262,6 +292,7 @@ terraform apply -var-file=../../env/azure.tfvars -var-file=../../env/azure-aks.t
 ### Run
 1. Connect to the K8S cluster, e.g.:
 ```bash
+## Fetch configuration
 az aks get-credentials --resource-group sequila-resources --name sequila-aks1
 # check connectivity
 kubectl get nodes
@@ -269,8 +300,8 @@ NAME                              STATUS   ROLES   AGE   VERSION
 aks-default-37875945-vmss000002   Ready    agent   59m   v1.20.9
 aks-default-37875945-vmss000003   Ready    agent   59m   v1.20.9
 ```
-2. Use `sparkctl` or `kubectl`: \
-   and
+2. Use [sparkctl](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/sparkctl) (recommended - available in sequila-cli image) or use `kubectl` to deploy a SeQuiLa job:
+
 ```bash
 sparkctl create ../../jobs/azure/aks/pysequila.yaml
 ```
@@ -278,6 +309,7 @@ After a while you will be able to check the logs:
 ```bash
 sparkctl log -f pysequila
 ```
+:bulb: Or you can use [k9s](https://k9scli.io/) tool (available in the image) to check Spark Driver std output:
 ![img.png](doc/images/aks-job.png)
 
 ### Cleanup
@@ -424,6 +456,7 @@ terraform apply -var-file=../../env/gcp.tfvars -var-file=../../env/gcp-gke.tfvar
 ### Run
 1. Connect to the K8S cluster, e.g.:
 ```bash
+## Fetch configuration
 gcloud container clusters get-credentials ${TF_VAR_project_name}-cluster --zone ${TF_VAR_zone} --project ${TF_VAR_project_name}
 # check connectivity
 kubectl get nodes
@@ -432,8 +465,7 @@ gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-8wqh   Ready    <none>   25m   v1
 gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-dlr1   Ready    <none>   25m   v1.21.5-gke.1302
 gke-tbd-tbd-devel-cl-tbd-tbd-devel-la-cb515767-r5l3   Ready    <none>   25m   v1.21.5-gke.1302
 ```
-2. Install [sparkctl](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/sparkctl) (recommended) or use `kubectl`: \
-   :bulb: If you use our image all the tools are already installed.
+2. Use [sparkctl](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/sparkctl) (recommended - available in sequila-cli image) or use `kubectl` to deploy a SeQuiLa job:
 
 ```bash
 sparkctl create ../../jobs/gcp/gke/pysequila.yaml
@@ -442,6 +474,7 @@ After a while you will be able to check the logs:
 ```bash
 sparkctl log -f pysequila
 ```
+:bulb: Or you can use [k9s](https://k9scli.io/) tool (available in the image) to check Spark Driver std output:
 ![img.png](doc/images/gke-job.png)
 
 ### Cleanup

@@ -13,8 +13,6 @@ module "aws-job-code" {
 }
 
 
-
-
 module "vpc" {
   count   = (var.aws-eks-deploy || var.aws-emr-deploy) ? 1 : 0
   source  = "terraform-aws-modules/vpc/aws"
@@ -37,6 +35,7 @@ module "vpc" {
 }
 
 module "emr-job" {
+  count              = var.aws-emr-deploy ? 1 : 0
   source             = "../../modules/aws/emr-serverless"
   aws-emr-release    = var.aws-emr-release
   bucket             = module.storage.bucket
@@ -51,7 +50,6 @@ module "emr-job" {
 
 module "eks" {
   count                           = var.aws-eks-deploy ? 1 : 0
-  depends_on                      = [module.vpc]
   version                         = "v18.30.2"
   source                          = "terraform-aws-modules/eks/aws"
   cluster_name                    = "sequila"
