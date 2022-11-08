@@ -38,7 +38,7 @@
 |------|-------------|------|---------|:--------:|
 | <a name="input_aws-eks-deploy"></a> [aws-eks-deploy](#input\_aws-eks-deploy) | Deploy EKS service | `bool` | `false` | no |
 | <a name="input_aws-emr-deploy"></a> [aws-emr-deploy](#input\_aws-emr-deploy) | Deploy EMR service | `bool` | `false` | no |
-| <a name="input_aws-emr-release"></a> [aws-emr-release](#input\_aws-emr-release) | EMR Serverless release (needs to be >=6.6.0) | `string` | n/a | yes |
+| <a name="input_aws-emr-release"></a> [aws-emr-release](#input\_aws-emr-release) | EMR Serverless release (needs to be >=6.6.0) | `string` | `"emr-6.6.0"` | no |
 | <a name="input_data_files"></a> [data\_files](#input\_data\_files) | Data files to copy to staging bucket | `list(string)` | n/a | yes |
 | <a name="input_eks_machine_type"></a> [eks\_machine\_type](#input\_eks\_machine\_type) | Machine size | `string` | `"t3.xlarge"` | no |
 | <a name="input_eks_max_node_count"></a> [eks\_max\_node\_count](#input\_eks\_max\_node\_count) | Maximum number of kubernetes nodes | `number` | `2` | no |

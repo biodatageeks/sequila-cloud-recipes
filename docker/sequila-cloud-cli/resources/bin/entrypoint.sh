@@ -10,18 +10,7 @@ EOF
 echo "SeQuiLa cloud cli version: ${SEQ_VERSION}"
 
 
-# check required env variables before proceeding
-: "${TF_VAR_project_name:?ERROR: Env variable TF_VAR_project_name not set !!!}"
-: "${TF_VAR_region:?ERROR: Env variable TF_VAR_location not set !!!}"
-: "${TF_VAR_zone:?ERROR: Env variable TF_VAR_zone not set !!!}"
-export GOOGLE_PROJECT=${TF_VAR_project_name}
-
 echo "Starting SeQuiLa cli container..."
-echo "=========================="
-echo "GOOGLE_PROJECT: ${GOOGLE_PROJECT}"
-echo "Location: ${TF_VAR_region}"
-echo "Zone: ${TF_VAR_zone}"
-echo "=========================="
 
 echo "Terraform variables:"
 echo "=========================="
