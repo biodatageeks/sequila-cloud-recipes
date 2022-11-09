@@ -98,7 +98,6 @@ export TF_VAR_zone=europe-west2-b
 ##
 docker pull biodatageeks/sequila-cloud-cli:latest
 docker run --rm -it \
-    -v /var/run/docker.sock:/var/run/docker.sock \
     -e TF_VAR_project_name=${TF_VAR_project_name} \
     -e TF_VAR_region=${TF_VAR_region} \
     -e TF_VAR_zone=${TF_VAR_zone} \
@@ -139,6 +138,7 @@ terraform init
 ```bash
 docker pull biodatageeks/sequila-cloud-cli:latest
 docker run --rm -it \
+    /var/run/docker.sock:/var/run/docker.sock \
     -e TF_VAR_pysequila_version=${TF_VAR_pysequila_version} \
     -e TF_VAR_sequila_version=${TF_VAR_sequila_version} \
     -e TF_VAR_pysequila_image_eks=${TF_VAR_pysequila_image_eks} \
