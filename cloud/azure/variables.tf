@@ -23,11 +23,6 @@ variable "region" {
   description = "Location of the cluster"
 }
 
-variable "zone" {
-  type        = string
-  description = "Zone of the cluster"
-}
-
 variable "data_files" {
   type        = list(string)
   description = "Data files to copy to staging bucket"
@@ -37,4 +32,10 @@ variable "azure-aks-deploy" {
   type        = bool
   default     = false
   description = "Deploy AKS cluster"
+}
+
+variable "azure-hdinsight-deploy" {
+  type        = bool
+  default     = false
+  description = "Deploy HDInsight cluster"
 }

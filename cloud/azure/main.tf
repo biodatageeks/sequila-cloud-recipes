@@ -3,7 +3,7 @@
 module "azure-resources" {
   source = "../../modules/azure/resource-mgmt"
   region = var.region
-  count  = var.azure-aks-deploy ? 1 : 0
+  count  = (var.azure-aks-deploy || var.azure-hdinsight-deploy) ? 1 : 0
 }
 
 module "azure-staging-blob" {
@@ -16,7 +16,18 @@ module "azure-staging-blob" {
   pysequila_version   = var.pysequila_version
   sequila_version     = var.sequila_version
   pysequila_image_aks = var.pysequila_image_aks
-  count               = var.azure-aks-deploy ? 1 : 0
+  count               = (var.azure-aks-deploy || var.azure-hdinsight-deploy) ? 1 : 0
+}
+
+#### Azure HDInsight
+module "hdinsight" {
+  depends_on                 = [module.azure-staging-blob]
+  source                     = "../../modules/azure/hdinsight"
+  region                     = var.region
+  resource_group             = module.azure-resources[0].resource_group
+  storage_container_id       = module.azure-resources[0].storage_container_id
+  storage_account_access_key = module.azure-resources[0].storage_account_access_key
+  count                      = var.azure-hdinsight-deploy ? 1 : 0
 }
 
 

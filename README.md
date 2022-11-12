@@ -67,6 +67,7 @@ as well. Check code comments for details.
 | GCP   | Dataproc  |2.0.27-ubuntu18| 3.1.3  | 1.0.0   | 0.3.3   |   -|
 | GCP   | Dataproc Serverless|1.0.21| 3.2.2  | 1.1.0   | 0.4.1   | gcr.io/${TF_VAR_project_name}/spark-py:pysequila-0.4.1-dataproc-latest  |
 | Azure | AKS       |1.23.12|3.2.2|1.1.0|0.4.1| docker.io/biodatageeks/spark-py:pysequila-0.4.1-aks-latest|
+| Azure | HDInsight| 5.0 | 3.1.2 | 1.0.0 | 0.3.3 |- |
 | AWS   | EKS|1.23.9 | 3.2.2 | 1.1.0 | 0.4.1 | docker.io/biodatageeks/spark-py:pysequila-0.4.1-eks-latest|
 | AWS   | EMR Serverless|emr-6.7.0 | 3.2.1 | 1.1.0 | 0.4.1 |- |
 
@@ -118,8 +119,10 @@ terraform init
 
 ## Using SeQuiLa cli Docker image for Azure
 ```bash
+export TF_VAR_region=westeurope
 docker pull biodatageeks/sequila-cloud-cli:latest
 docker run --rm -it \
+    -e TF_VAR_region=${TF_VAR_region} \
     -e TF_VAR_pysequila_version=${TF_VAR_pysequila_version} \
     -e TF_VAR_sequila_version=${TF_VAR_sequila_version} \
     -e TF_VAR_pysequila_image_aks=${TF_VAR_pysequila_image_aks} \
