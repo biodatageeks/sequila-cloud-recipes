@@ -39,3 +39,15 @@ variable "azure-hdinsight-deploy" {
   default     = false
   description = "Deploy HDInsight cluster"
 }
+
+variable "hdinsight_gateway_password" {
+  type        = string
+  default     = null
+  description = "Hadoop gateway password (i.e. Ambari, YARN UI console, etc)"
+}
+
+variable "hdinsight_ssh_password" {
+  type        = string
+  default     = null
+  description = "SSH password to all nodes in the cluster"
+}

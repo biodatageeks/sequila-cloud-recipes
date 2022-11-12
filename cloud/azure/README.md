@@ -33,6 +33,8 @@ No resources.
 | <a name="input_azure-aks-deploy"></a> [azure-aks-deploy](#input\_azure-aks-deploy) | Deploy AKS cluster | `bool` | `false` | no |
 | <a name="input_azure-hdinsight-deploy"></a> [azure-hdinsight-deploy](#input\_azure-hdinsight-deploy) | Deploy HDInsight cluster | `bool` | `false` | no |
 | <a name="input_data_files"></a> [data\_files](#input\_data\_files) | Data files to copy to staging bucket | `list(string)` | n/a | yes |
+| <a name="input_hdinsight_gateway_password"></a> [hdinsight\_gateway\_password](#input\_hdinsight\_gateway\_password) | Hadoop gateway password (i.e. Ambari, YARN UI console, etc) | `string` | `null` | no |
+| <a name="input_hdinsight_ssh_password"></a> [hdinsight\_ssh\_password](#input\_hdinsight\_ssh\_password) | SSH password to all nodes in the cluster | `string` | `null` | no |
 | <a name="input_pysequila_image_aks"></a> [pysequila\_image\_aks](#input\_pysequila\_image\_aks) | AKS PySeQuiLa image | `string` | n/a | yes |
 | <a name="input_pysequila_version"></a> [pysequila\_version](#input\_pysequila\_version) | PySeQuiLa version | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Location of the cluster | `string` | n/a | yes |
@@ -41,5 +43,10 @@ No resources.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_hdinsight_gateway_password"></a> [hdinsight\_gateway\_password](#output\_hdinsight\_gateway\_password) | n/a |
+| <a name="output_hdinsight_ssh_password"></a> [hdinsight\_ssh\_password](#output\_hdinsight\_ssh\_password) | n/a |
+| <a name="output_pysequila_submit_command"></a> [pysequila\_submit\_command](#output\_pysequila\_submit\_command) | n/a |
+| <a name="output_ssh_command"></a> [ssh\_command](#output\_ssh\_command) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

@@ -39,6 +39,7 @@ module "emr-job" {
   source             = "../../modules/aws/emr-serverless"
   aws-emr-release    = var.aws-emr-release
   bucket             = module.storage.bucket
+  spark_version      = var.spark_version
   pysequila_version  = var.pysequila_version
   sequila_version    = var.sequila_version
   data_files         = [for f in var.data_files : "s3://${module.storage.bucket}/data/${f}" if length(regexall("fasta", f)) > 0]

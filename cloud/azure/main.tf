@@ -27,7 +27,15 @@ module "hdinsight" {
   resource_group             = module.azure-resources[0].resource_group
   storage_container_id       = module.azure-resources[0].storage_container_id
   storage_account_access_key = module.azure-resources[0].storage_account_access_key
+  storage_container_name     = module.azure-resources[0].azurerm_storage_container
+  storage_account_name       = module.azure-resources[0].storage_account
+  pysequila_version          = var.pysequila_version
+  sequila_version            = var.sequila_version
+  node_ssh_password          = var.hdinsight_ssh_password
+  gateway_password           = var.hdinsight_gateway_password
+  data_files                 = [for f in var.data_files : "wasb://sequila@${module.azure-resources[0].storage_account}.blob.core.windows.net/data/${f}" if length(regexall("fasta", f)) > 0]
   count                      = var.azure-hdinsight-deploy ? 1 : 0
+
 }
 
 
