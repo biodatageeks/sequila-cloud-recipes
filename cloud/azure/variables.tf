@@ -23,11 +23,6 @@ variable "region" {
   description = "Location of the cluster"
 }
 
-variable "zone" {
-  type        = string
-  description = "Zone of the cluster"
-}
-
 variable "data_files" {
   type        = list(string)
   description = "Data files to copy to staging bucket"
@@ -37,4 +32,22 @@ variable "azure-aks-deploy" {
   type        = bool
   default     = false
   description = "Deploy AKS cluster"
+}
+
+variable "azure-hdinsight-deploy" {
+  type        = bool
+  default     = false
+  description = "Deploy HDInsight cluster"
+}
+
+variable "hdinsight_gateway_password" {
+  type        = string
+  default     = null
+  description = "Hadoop gateway password (i.e. Ambari, YARN UI console, etc)"
+}
+
+variable "hdinsight_ssh_password" {
+  type        = string
+  default     = null
+  description = "SSH password to all nodes in the cluster"
 }

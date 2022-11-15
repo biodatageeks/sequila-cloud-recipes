@@ -24,6 +24,7 @@ Table of Contents
     * [EMR Serverless](#emr-serverless)
 * [Azure](#azure-1)
     * [Login](#login)
+    * [HDInsight](#hdinsight)
     * [AKS](#aks)
 * [GCP](#gcp-1)
     * [Login](#login-2)
@@ -67,6 +68,7 @@ as well. Check code comments for details.
 | GCP   | Dataproc  |2.0.27-ubuntu18| 3.1.3  | 1.0.0   | 0.3.3   |   -|
 | GCP   | Dataproc Serverless|1.0.21| 3.2.2  | 1.1.0   | 0.4.1   | gcr.io/${TF_VAR_project_name}/spark-py:pysequila-0.4.1-dataproc-latest  |
 | Azure | AKS       |1.23.12|3.2.2|1.1.0|0.4.1| docker.io/biodatageeks/spark-py:pysequila-0.4.1-aks-latest|
+| Azure | HDInsight| 5.0.300.1 | 3.2.2 | 1.1.0 | 0.4.1 |- |
 | AWS   | EKS|1.23.9 | 3.2.2 | 1.1.0 | 0.4.1 | docker.io/biodatageeks/spark-py:pysequila-0.4.1-eks-latest|
 | AWS   | EMR Serverless|emr-6.7.0 | 3.2.1 | 1.1.0 | 0.4.1 |- |
 
@@ -118,8 +120,10 @@ terraform init
 
 ## Using SeQuiLa cli Docker image for Azure
 ```bash
+export TF_VAR_region=westeurope
 docker pull biodatageeks/sequila-cloud-cli:latest
 docker run --rm -it \
+    -e TF_VAR_region=${TF_VAR_region} \
     -e TF_VAR_pysequila_version=${TF_VAR_pysequila_version} \
     -e TF_VAR_sequila_version=${TF_VAR_sequila_version} \
     -e TF_VAR_pysequila_image_aks=${TF_VAR_pysequila_image_aks} \
@@ -162,7 +166,7 @@ terraform init
 
 ## Azure
 * [AKS (Azure Kubernetes Service)](#AKS): :white_check_mark:
-
+* [HDInsight](#hdinsight): :white_check_mark:
 ## AWS
 * [EMR Serverless](#emr-serverless): :white_check_mark:
 * [EKS(Elastic Kubernetes Service)](#EKS): :white_check_mark:
@@ -275,6 +279,60 @@ Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
 ```bash
 az login
 az account set --subscription "Azure subscription 1"
+```
+
+## HDInsight
+:bulb: According to the [release notes](https://learn.microsoft.com/en-us/azure/hdinsight/hdinsight-50-component-versioning?source=recommendations) 
+HDInisght 5.0 comes with Apache Spark 3.1.2. Unfortunately it is 3.0.2:
+
+![img.png](doc/images/hdinsight-spark-version.png)
+
+Since HDInsight is in fact a full-fledged Hadoop cluster we were able to add to the Terraform module support for Apache Spark 3.2.2 using
+[a script action](https://learn.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-customize-cluster-linux) mechanism.
+
+
+### Deploy
+```bash
+export TF_VAR_hdinsight_gateway_password=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16 ; echo '')
+export TF_VAR_hdinsight_ssh_password=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16 ; echo '')
+terraform apply -var-file=../../env/azure.tfvars -var-file=../../env/azure-hdinsight.tfvars -var-file=../../env/_all.tfvars
+```
+Check Terraform output variables for ssh connection string, credentials and Spark Submit command, e.g.
+```bash
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+hdinsight_gateway_password = "w8aN6oVSJobq7eu4"
+hdinsight_ssh_password = "wun6RzBBPWD9z9ke"
+pysequila_submit_command = <<EOT
+export SPARK_HOME=/opt/spark
+spark-submit \
+--master yarn \
+--packages org.biodatageeks:sequila_2.12:1.1.0 \
+--conf spark.pyspark.python=/usr/bin/miniforge/envs/py38/bin/python3 \
+--conf spark.driver.cores=1 \
+--conf spark.driver.memory=1g \
+--conf spark.executor.cores=1 \
+--conf spark.executor.memory=3g \
+--conf spark.executor.instances=1 \
+--conf spark.files=wasb://sequila@sequilai1aayxsd.blob.core.windows.net/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta,wasb://sequila@sequilai1aayxsd.blob.core.windows.net/data/Homo_sapiens_assembly18_chr1_chrM.small.fasta.fai \
+wasb://sequila@sequilai1aayxsd.blob.core.windows.net/jobs/pysequila/sequila-pileup.py
+
+EOT
+ssh_command = "ssh sequila@sequila-6lsnhqtc-ssh.azurehdinsight.net"
+```
+
+### Run
+1. Use `ssh_command` and `hdinsight_ssh_password` to connect to the head node.
+2. Run `pysequila_submit_command` command.
+
+![img.png](doc/images/hdinsight-job.png)
+![img.png](doc/images/hdinsight-job-2.png)
+
+### Cleanup
+```bash
+terraform destroy -var-file=../../env/azure.tfvars -var-file=../../env/azure-hdinsight.tfvars -var-file=../../env/_all.tfvars
 ```
 
 ## AKS

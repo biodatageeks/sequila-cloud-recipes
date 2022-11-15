@@ -39,4 +39,7 @@ No modules.
 | <a name="output_azurerm_storage_container"></a> [azurerm\_storage\_container](#output\_azurerm\_storage\_container) | n/a |
 | <a name="output_resource_group"></a> [resource\_group](#output\_resource\_group) | n/a |
 | <a name="output_storage_account"></a> [storage\_account](#output\_storage\_account) | n/a |
+| <a name="output_storage_account_access_key"></a> [storage\_account\_access\_key](#output\_storage\_account\_access\_key) | n/a |
+| <a name="output_storage_account_id"></a> [storage\_account\_id](#output\_storage\_account\_id) | n/a |
+| <a name="output_storage_container_id"></a> [storage\_container\_id](#output\_storage\_container\_id) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

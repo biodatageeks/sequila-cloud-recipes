@@ -28,7 +28,7 @@ No modules.
 | <a name="input_machine_type"></a> [machine\_type](#input\_machine\_type) | Azure machine type | `string` | `"Standard_D2_v2"` | no |
 | <a name="input_max_node_count"></a> [max\_node\_count](#input\_max\_node\_count) | Maximum number of AKS nodes | `number` | `2` | no |
 | <a name="input_region"></a> [region](#input\_region) | Location of the cluster | `string` | n/a | yes |
-| <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | n/a | `string` | n/a | yes |
+| <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | Azure resource group | `string` | n/a | yes |
 
 ## Outputs
 

@@ -4,7 +4,8 @@ variable "region" {
 }
 
 variable "resource_group" {
-  type = string
+  type        = string
+  description = "Azure resource group"
 }
 
 variable "machine_type" {
